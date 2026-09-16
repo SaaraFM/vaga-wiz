@@ -49,9 +49,9 @@ export function tfidfVectorize(
     const vector = new Array<number>(vocabulary.length).fill(0);
     for (const term of tokens) {
       const index = termIndex.get(term);
-      if (index !== undefined) vector[index] += 1;
+      if (index !== undefined) vector[index] = (vector[index] ?? 0) + 1;
     }
-    for (let i = 0; i < vector.length; i += 1) vector[i] *= idf[i];
+    for (let i = 0; i < vector.length; i += 1) vector[i] = (vector[i] ?? 0) * (idf[i] ?? 0);
     return l2Normalize(vector);
   });
 
@@ -72,7 +72,7 @@ export function topTerms(
   limit = 8,
 ): TermWeight[] {
   return vector
-    .map((weight, index) => ({ term: vocabulary[index], weight }))
+    .map((weight, index) => ({ term: vocabulary[index] ?? "", weight }))
     .filter((item) => item.weight > 0)
     .sort((a, b) => b.weight - a.weight)
     .slice(0, limit);
