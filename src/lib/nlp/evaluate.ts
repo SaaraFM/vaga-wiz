@@ -51,7 +51,7 @@ export function evaluateDescription(
     feedback: buildFeedback(score),
     cleanedGenerated,
     cleanedExpected,
-    topGeneratedTerms: topTerms(vocabulary, vectors[0], 8),
+    topGeneratedTerms: topTerms(vocabulary, generatedVector, 8),
     topExpectedTerms: topExpectedTerms.slice(0, 8),
     missingTerms: topExpectedTerms
       .filter((item) => !generatedTokens.has(item.term))
