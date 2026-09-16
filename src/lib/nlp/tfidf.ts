@@ -39,7 +39,7 @@ export function tfidfVectorize(
   for (const tokens of tokenizedDocs) {
     for (const term of new Set(tokens)) {
       const index = termIndex.get(term);
-      if (index !== undefined) documentFrequency[index] += 1;
+      if (index !== undefined) documentFrequency[index] = (documentFrequency[index] ?? 0) + 1;
     }
   }
 

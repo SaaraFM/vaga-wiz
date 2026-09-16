@@ -10,9 +10,11 @@ export function cosineSimilarity(a: readonly number[], b: readonly number[]): nu
   let normB = 0;
 
   for (let i = 0; i < a.length; i += 1) {
-    dot += a[i] * b[i];
-    normA += a[i] * a[i];
-    normB += b[i] * b[i];
+    const valueA = a[i] ?? 0;
+    const valueB = b[i] ?? 0;
+    dot += valueA * valueB;
+    normA += valueA * valueA;
+    normB += valueB * valueB;
   }
 
   if (normA === 0 || normB === 0) return 0;
