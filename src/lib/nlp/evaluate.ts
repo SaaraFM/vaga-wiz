@@ -35,11 +35,14 @@ export function evaluateDescription(
     removeStopwords: false,
   });
 
-  const similarity = cosineSimilarity(vectors[0], vectors[1]);
+  const generatedVector = vectors[0] ?? [];
+  const expectedVector = vectors[1] ?? [];
+
+  const similarity = cosineSimilarity(generatedVector, expectedVector);
   const score = similarityToScore(similarity);
 
   const generatedTokens = new Set(cleanedGenerated.split(" ").filter(Boolean));
-  const topExpectedTerms = topTerms(vocabulary, vectors[1], 12);
+  const topExpectedTerms = topTerms(vocabulary, expectedVector, 12);
 
   return {
     similarity,
