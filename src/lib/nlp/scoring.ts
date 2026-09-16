@@ -31,16 +31,14 @@ export function buildFeedback(score: number): Feedback {
     return {
       level: "entendeu",
       label: "Entendeu",
-      message:
-        "A descrição possui grande similaridade com o modelo esperado.",
+      message: "A descrição possui grande similaridade com o modelo esperado.",
     };
   }
   if (score >= 50) {
     return {
       level: "parcial",
       label: "Parcial",
-      message:
-        "A descrição possui alguns elementos importantes, mas pode ser melhorada.",
+      message: "A descrição possui alguns elementos importantes, mas pode ser melhorada.",
     };
   }
   return {

@@ -109,7 +109,9 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
           <div>
             <h2 className="text-sm font-semibold">Assistente de vagas</h2>
             <p className="text-xs text-muted-foreground">
-              {finalizado ? "Entrevista concluída" : `Pergunta ${indice + 1} de ${PERGUNTAS.length}`}
+              {finalizado
+                ? "Entrevista concluída"
+                : `Pergunta ${indice + 1} de ${PERGUNTAS.length}`}
             </p>
           </div>
         </div>
@@ -119,9 +121,17 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
         </Button>
       </header>
 
-      <Progress value={progresso} className="h-1 rounded-none" aria-label="Progresso da entrevista" />
+      <Progress
+        value={progresso}
+        className="h-1 rounded-none"
+        aria-label="Progresso da entrevista"
+      />
 
-      <div className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-5" role="log" aria-live="polite">
+      <div
+        className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-5"
+        role="log"
+        aria-live="polite"
+      >
         {mensagens.map((mensagem) => (
           <div
             key={mensagem.id}
@@ -196,7 +206,9 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
             </p>
           )}
           <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-xs text-muted-foreground">Enter envia • Shift+Enter quebra linha</span>
+            <span className="text-xs text-muted-foreground">
+              Enter envia • Shift+Enter quebra linha
+            </span>
             <Button type="submit" size="sm" className="gap-2" disabled={rascunho.trim().length < 2}>
               Enviar
               <Send className="size-4" aria-hidden />

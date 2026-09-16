@@ -24,10 +24,7 @@ export interface EvaluationResult {
   readonly missingTerms: string[];
 }
 
-export function evaluateDescription(
-  generated: string,
-  expected: string,
-): EvaluationResult {
+export function evaluateDescription(generated: string, expected: string): EvaluationResult {
   const cleanedGenerated = preprocess(generated);
   const cleanedExpected = preprocess(expected);
 

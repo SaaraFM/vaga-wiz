@@ -22,12 +22,12 @@ Atender aos requisitos da disciplina:
 
 ## Tecnologias utilizadas
 
-| Camada | Tecnologia |
-|---|---|
-| Interface web | React 19, TypeScript, TanStack Start, Tailwind CSS |
-| PLN na web | Implementação própria de TF-IDF e similaridade do cosseno em TypeScript |
-| PLN em Python | Python 3, scikit-learn (`TfidfVectorizer`, `cosine_similarity`) |
-| Testes | Script de testes em TypeScript (`bun`) e em Python |
+| Camada        | Tecnologia                                                              |
+| ------------- | ----------------------------------------------------------------------- |
+| Interface web | React 19, TypeScript, TanStack Start, Tailwind CSS                      |
+| PLN na web    | Implementação própria de TF-IDF e similaridade do cosseno em TypeScript |
+| PLN em Python | Python 3, scikit-learn (`TfidfVectorizer`, `cosine_similarity`)         |
+| Testes        | Script de testes em TypeScript (`bun`) e em Python                      |
 
 > A versão web e a versão Python implementam **o mesmo pipeline**, com a mesma fórmula de IDF
 > (`smooth_idf`) e normalização L2, produzindo resultados equivalentes.
@@ -141,20 +141,20 @@ Mede o ângulo entre os dois vetores, retornando um valor entre 0 e 1:
 nota = similaridade * 100
 ```
 
-| Faixa | Classificação |
-|---|---|
-| 0–40 | Baixa qualidade |
-| 41–70 | Qualidade intermediária |
-| 71–90 | Boa descrição |
-| 91–100 | Excelente descrição |
+| Faixa  | Classificação           |
+| ------ | ----------------------- |
+| 0–40   | Baixa qualidade         |
+| 41–70  | Qualidade intermediária |
+| 71–90  | Boa descrição           |
+| 91–100 | Excelente descrição     |
 
 ### 5. Feedback automático
 
-| Nota | Feedback |
-|---|---|
-| Acima de 80 | **Entendeu** — a descrição possui grande similaridade com o modelo esperado. |
+| Nota          | Feedback                                                                               |
+| ------------- | -------------------------------------------------------------------------------------- |
+| Acima de 80   | **Entendeu** — a descrição possui grande similaridade com o modelo esperado.           |
 | Entre 50 e 80 | **Parcial** — a descrição possui alguns elementos importantes, mas pode ser melhorada. |
-| Abaixo de 50 | **Não entendeu** — a descrição possui pouca relação com o modelo esperado. |
+| Abaixo de 50  | **Não entendeu** — a descrição possui pouca relação com o modelo esperado.             |
 
 ---
 
@@ -171,11 +171,11 @@ nota = similaridade * 100
 
 ### Exemplo real (executado pelos testes)
 
-| Caso | Similaridade | Nota | Feedback |
-|---|---|---|---|
-| Descrição semelhante ao modelo | 83.5% | 84/100 | Entendeu |
-| Descrição de outra área (Chef de Cozinha) | 5.5% | 6/100 | Não entendeu |
-| Mesmo contexto com sinônimos | 1.2% | 1/100 | Não entendeu |
+| Caso                                      | Similaridade | Nota   | Feedback     |
+| ----------------------------------------- | ------------ | ------ | ------------ |
+| Descrição semelhante ao modelo            | 83.5%        | 84/100 | Entendeu     |
+| Descrição de outra área (Chef de Cozinha) | 5.5%         | 6/100  | Não entendeu |
+| Mesmo contexto com sinônimos              | 1.2%         | 1/100  | Não entendeu |
 
 ---
 

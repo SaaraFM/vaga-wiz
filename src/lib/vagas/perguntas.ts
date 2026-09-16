@@ -24,7 +24,11 @@ export const PERGUNTAS: readonly Pergunta[] = [
     rotulo: "Cargo",
     texto: "Vamos começar! Qual é o cargo da vaga?",
     placeholder: "Ex.: Desenvolvedor Python Júnior",
-    sugestoes: ["Desenvolvedor Python Júnior", "Analista de Dados", "Desenvolvedor Front-end React"],
+    sugestoes: [
+      "Desenvolvedor Python Júnior",
+      "Analista de Dados",
+      "Desenvolvedor Front-end React",
+    ],
   },
   {
     campo: "area",

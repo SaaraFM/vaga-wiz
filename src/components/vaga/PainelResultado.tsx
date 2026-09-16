@@ -55,7 +55,13 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
             <FileText className="size-4 text-primary" aria-hidden />
             Descrição gerada
           </h2>
-          <Button type="button" variant="outline" size="sm" className="gap-2" onClick={copiarDescricao}>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={copiarDescricao}
+          >
             <ClipboardCopy className="size-4" aria-hidden />
             Copiar
           </Button>
@@ -123,7 +129,10 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
         {avaliacao ? (
           <div className="mt-5 space-y-5">
             <div className="grid gap-3 sm:grid-cols-3">
-              <Metrica rotulo="Similaridade" valor={`${(avaliacao.similarity * 100).toFixed(1)}%`} />
+              <Metrica
+                rotulo="Similaridade"
+                valor={`${(avaliacao.similarity * 100).toFixed(1)}%`}
+              />
               <Metrica rotulo="Nota" valor={`${avaliacao.score}/100`} />
               <Metrica rotulo="Classificação" valor={avaliacao.classification.label} />
             </div>
@@ -134,7 +143,9 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
               <Badge className={cn("mb-2", CORES_FEEDBACK[avaliacao.feedback.level])}>
                 {avaliacao.feedback.label}
               </Badge>
-              <p className="text-sm leading-relaxed text-foreground">{avaliacao.feedback.message}</p>
+              <p className="text-sm leading-relaxed text-foreground">
+                {avaliacao.feedback.message}
+              </p>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
@@ -153,7 +164,8 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
               <summary className="cursor-pointer font-medium">Ver textos pré-processados</summary>
               <div className="mt-3 space-y-3 text-xs text-muted-foreground">
                 <p>
-                  <strong className="text-foreground">Sua descrição:</strong> {avaliacao.cleanedGenerated}
+                  <strong className="text-foreground">Sua descrição:</strong>{" "}
+                  {avaliacao.cleanedGenerated}
                 </p>
                 <p>
                   <strong className="text-foreground">Gabarito:</strong> {avaliacao.cleanedExpected}

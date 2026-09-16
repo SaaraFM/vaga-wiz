@@ -55,7 +55,8 @@ function Index() {
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
             Converse com o chatbot, gere uma descrição profissional e compare com a descrição ideal
-            usando TF-IDF e similaridade do cosseno: similaridade, nota de 0 a 100 e feedback automático.
+            usando TF-IDF e similaridade do cosseno: similaridade, nota de 0 a 100 e feedback
+            automático.
           </p>
         </div>
       </header>
@@ -63,9 +64,7 @@ function Index() {
       <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
         <div className="min-h-[34rem] lg:h-[calc(100vh-14rem)] lg:sticky lg:top-6">
           <ChatVaga
-            onConcluir={(respostas) =>
-              setVaga({ respostas, descricao: gerarDescricao(respostas) })
-            }
+            onConcluir={(respostas) => setVaga({ respostas, descricao: gerarDescricao(respostas) })}
             onReiniciar={() => setVaga(null)}
           />
         </div>

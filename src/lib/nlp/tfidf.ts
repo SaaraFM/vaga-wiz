@@ -28,9 +28,7 @@ export function tfidfVectorize(
 ): TfidfResult {
   const tokenizedDocs = documents.map((doc) => tokenize(doc, options));
 
-  const vocabulary = Array.from(new Set(tokenizedDocs.flat())).sort((a, b) =>
-    a.localeCompare(b),
-  );
+  const vocabulary = Array.from(new Set(tokenizedDocs.flat())).sort((a, b) => a.localeCompare(b));
   const termIndex = new Map(vocabulary.map((term, index) => [term, index]));
 
   const n = documents.length;
