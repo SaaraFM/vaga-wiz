@@ -58,6 +58,22 @@ python chatbot.py     # chatbot interativo + avaliação
 python testes.py      # testes obrigatórios
 ```
 
+### Publicação no GitHub Pages
+
+O projeto possui um build **estático (SPA)** próprio para o GitHub Pages:
+
+```bash
+bun run build:pages   # gera a pasta dist-pages/
+```
+
+A publicação é automática: a cada push na branch `main`, o workflow
+`.github/workflows/deploy-pages.yml` gera o build estático e publica no GitHub Pages.
+
+Para ativar (uma única vez): no repositório, acesse **Settings → Pages → Build and deployment →
+Source: GitHub Actions**. O site fica disponível em
+`https://saarafm.github.io/descricao_vagas/`.
+
+
 ---
 
 ## Estrutura do projeto
