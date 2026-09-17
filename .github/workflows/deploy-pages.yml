@@ -25,15 +25,17 @@ jobs:
           bun-version: latest
 
       - name: Instalar dependências
-        run: bun install --frozen-lockfile
+        run: bun install
 
       - name: Build estático
         run: bun run build:pages
         env:
           PAGES_BASE: /${{ github.event.repository.name }}/
 
-      - name: Fallback de SPA (404.html)
-        run: cp dist-pages/index.html dist-pages/404.html
+      - name: Fallback de SPA (404.html) e .nojekyll
+        run: |
+          cp dist-pages/index.html dist-pages/404.html
+          touch dist-pages/.nojekyll
 
       - uses: actions/configure-pages@v5
 
