@@ -10,6 +10,16 @@ interface DadosRelatorio {
   readonly nomeGabarito: string;
 }
 
+/** Termos do relatório redigidos de forma diferente da tela. */
+const ROTULOS_RELATORIO: Record<string, string> = {
+  "Baixa qualidade": "Baixa compatibilidade",
+  "Não entendeu": "Não atendeu",
+};
+
+function rotuloRelatorio(rotulo: string): string {
+  return ROTULOS_RELATORIO[rotulo] ?? rotulo;
+}
+
 const MARGEM = 18;
 const LARGURA_PAGINA = 210;
 const ALTURA_PAGINA = 297;
@@ -76,8 +86,8 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
     secao("Avaliação de qualidade (PLN)");
     paragrafo(`Gabarito de referência: ${dados.nomeGabarito}`);
     paragrafo(`Similaridade: ${(a.similarity * 100).toFixed(1)}%`);
-    paragrafo(`Nota: ${a.score}/100 — ${a.classification.label}`, 10, "bold");
-    paragrafo(`Feedback: ${a.feedback.label} — ${a.feedback.message}`);
+    paragrafo(`Nota: ${a.score}/100 — ${rotuloRelatorio(a.classification.label)}`, 10, "bold");
+    paragrafo(`Feedback: ${rotuloRelatorio(a.feedback.label)} — ${a.feedback.message}`);
     if (a.missingTerms.length > 0) {
       paragrafo(`Termos ausentes: ${a.missingTerms.join(", ")}`);
     }
