@@ -99,15 +99,15 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
   return (
     <section
       aria-label="Chatbot de criação de vaga"
-      className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+      className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
     >
-      <header className="flex items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
+      <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-5 sm:px-6">
         <div className="flex items-center gap-3">
-          <span className="flex size-9 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Bot className="size-4.5" aria-hidden />
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Bot className="size-5" aria-hidden />
           </span>
           <div>
-            <h2 className="font-display text-sm font-semibold">Assistente de vagas</h2>
+            <h1 className="font-display text-base font-semibold">Assistente de vagas</h1>
             <p className="text-xs text-muted-foreground">
               {finalizado
                 ? "Entrevista concluída"
@@ -128,7 +128,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
       />
 
       <div
-        className="flex-1 space-y-4 overflow-y-auto px-4 py-5 sm:px-5"
+        className="flex-1 space-y-5 overflow-y-auto px-5 py-6 sm:px-6"
         role="log"
         aria-live="polite"
       >
@@ -147,10 +147,10 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
             )}
             <p
               className={cn(
-                "max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed transition-colors",
+                "max-w-[85%] rounded-2xl border px-4 py-3 text-sm leading-relaxed transition-colors",
                 mensagem.autor === "usuario"
-                  ? "rounded-br-sm bg-primary text-primary-foreground"
-                  : "rounded-bl-sm bg-bot text-bot-foreground",
+                  ? "rounded-br-sm border-primary bg-primary text-primary-foreground shadow-lg"
+                  : "rounded-bl-sm border-border bg-bot/70 text-bot-foreground",
               )}
             >
               {mensagem.texto}
@@ -166,7 +166,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
       </div>
 
       {perguntaAtual ? (
-        <form onSubmit={handleSubmit} className="border-t border-border p-4 sm:p-5">
+        <form onSubmit={handleSubmit} className="border-t border-border p-5 sm:p-6">
           <div className="mb-3 flex flex-wrap gap-2">
             {perguntaAtual.sugestoes.map((sugestao) => (
               <button
@@ -216,7 +216,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
           </div>
         </form>
       ) : (
-        <div className="border-t border-border p-4 text-sm text-muted-foreground sm:p-5">
+        <div className="border-t border-border bg-surface/30 p-4 text-center text-xs text-muted-foreground sm:p-5">
           Entrevista concluída. Veja a descrição e a avaliação ao lado.
         </div>
       )}

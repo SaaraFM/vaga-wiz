@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, ClipboardCopy, FileDown, FileText, Gauge, Loader2 } from "lucide-react";
+import { Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -70,11 +70,11 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
   }
 
   return (
-    <section aria-label="Resultado" className="flex h-full flex-col gap-4">
-      <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 font-display text-sm font-semibold">
-            <FileText className="size-4 text-primary" aria-hidden />
+    <section aria-label="Resultado" className="flex h-full min-h-0 flex-col gap-6">
+      <article className="flex min-h-0 flex-1 flex-col rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
+        <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-3 font-display text-xl font-bold">
+            <span className="h-6 w-1.5 rounded-full bg-primary" aria-hidden />
             Descrição gerada
           </h2>
           <div className="flex gap-2">
@@ -104,13 +104,13 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
             </Button>
           </div>
         </header>
-        <pre className="max-h-72 overflow-y-auto whitespace-pre-wrap rounded-xl bg-surface p-4 font-sans text-sm leading-relaxed text-foreground">
+        <pre className="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap pr-2 font-sans text-sm leading-relaxed text-foreground">
           {descricao}
         </pre>
       </article>
 
-      <article className="flex-1 rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <h2 className="mb-4 flex items-center gap-2 font-display text-sm font-semibold">
+      <article className="rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
+        <h2 className="mb-5 flex items-center gap-2 font-display text-xs font-bold uppercase text-muted-foreground">
           <Gauge className="size-4 text-primary" aria-hidden />
           Avaliação por PLN (TF-IDF + similaridade do cosseno)
         </h2>
@@ -119,7 +119,7 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
           value={usarProprio ? "proprio" : "banco"}
           onValueChange={(valor) => setUsarProprio(valor === "proprio")}
         >
-          <TabsList className="mb-3">
+          <TabsList className="mb-4">
             <TabsTrigger value="banco">Banco de gabaritos</TabsTrigger>
             <TabsTrigger value="proprio">Gabarito próprio</TabsTrigger>
           </TabsList>
@@ -165,7 +165,7 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
         </Tabs>
 
         {avaliacao ? (
-          <div className="mt-5 space-y-5">
+          <div className="mt-6 space-y-5">
             <div className="grid items-stretch gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(9rem,0.9fr)_minmax(0,1fr)]">
               <Metrica
                 rotulo="Similaridade"
@@ -223,52 +223,50 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
 
 function Metrica({ rotulo, valor }: { readonly rotulo: string; readonly valor: string }) {
   return (
-    <div className="rounded-xl border border-border bg-surface px-4 py-3">
+    <div className="flex min-h-32 flex-col justify-center rounded-xl border border-border bg-background px-5 py-4">
       <p className="text-xs text-muted-foreground">{rotulo}</p>
-      <p className="mt-1 font-display text-lg font-semibold text-foreground">{valor}</p>
+      <p className="mt-1 font-display text-xl font-bold text-foreground">{valor}</p>
     </div>
   );
 }
 
 function RingNota({ valor }: { readonly valor: number }) {
-  const raio = 26;
-  const circunferencia = 2 * Math.PI * raio;
   const nota = Math.min(Math.max(valor, 0), 100);
-  const preenchido = (nota / 100) * circunferencia;
 
   return (
-    <div className="flex min-h-24 flex-col items-center justify-center rounded-xl border border-border bg-surface px-4 py-3 text-center">
-      <div className="relative size-20 shrink-0">
+    <div className="flex min-h-32 flex-col items-center justify-center rounded-xl border border-border bg-background px-4 py-4 text-center">
+      <div className="grid size-20 shrink-0 place-items-center">
         <svg
-          viewBox="0 0 64 64"
-          className="size-full -rotate-90"
+          viewBox="0 0 100 100"
+          className="col-start-1 row-start-1 size-full -rotate-90"
           role="img"
           aria-label={`Nota ${Math.round(nota)} por cento`}
         >
           <circle
-            cx="32"
-            cy="32"
-            r={raio}
+            cx="50"
+            cy="50"
+            r="42"
             fill="none"
-            strokeWidth="5"
-            className="stroke-border"
+            strokeWidth="8"
+            className="stroke-muted-foreground/30"
           />
           <circle
-            cx="32"
-            cy="32"
-            r={raio}
+            cx="50"
+            cy="50"
+            r="42"
             fill="none"
-            strokeWidth="5"
+            strokeWidth="8"
             strokeLinecap="round"
-            strokeDasharray={`${preenchido} ${circunferencia}`}
-            className="stroke-primary transition-[stroke-dasharray] duration-700"
+            pathLength="100"
+            strokeDasharray={`${nota} ${100 - nota}`}
+            className="stroke-primary transition-[stroke-dasharray] duration-700 motion-reduce:transition-none"
           />
         </svg>
-        <p className="absolute inset-0 flex items-center justify-center font-display text-lg font-bold text-foreground">
+        <p className="col-start-1 row-start-1 font-display text-xl font-bold leading-none text-foreground">
           {Math.round(nota)}%
         </p>
       </div>
-      <p className="mt-1 text-xs text-muted-foreground">Nota de qualidade</p>
+      <p className="mt-2 text-xs text-muted-foreground">Nota de qualidade</p>
     </div>
   );
 }
