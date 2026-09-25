@@ -19,8 +19,8 @@ export function PaginaVaga() {
     <div className="min-h-screen bg-background">
       <Toaster position="top-center" />
 
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 sm:px-6 lg:px-8">
+      <header className="border-b border-border bg-card/70">
+        <div className="mx-auto flex max-w-[90rem] flex-col gap-2 px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-primary">
             <Sparkle className="size-4" aria-hidden />
             <span className="text-xs font-medium tracking-wide uppercase">
@@ -38,7 +38,7 @@ export function PaginaVaga() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:px-8">
+      <main className="mx-auto grid max-w-[90rem] items-start gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:px-8">
         <div className="min-h-[34rem] lg:sticky lg:top-6 lg:h-[calc(100vh-14rem)]">
           <ChatVaga
             onConcluir={(respostas) => setVaga({ respostas, descricao: gerarDescricao(respostas) })}
@@ -51,7 +51,7 @@ export function PaginaVaga() {
         ) : (
           <section
             aria-label="Resultado"
-            className="flex min-h-[20rem] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border bg-card/60 p-8 text-center"
+            className="flex min-h-[34rem] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border bg-card/60 p-8 text-center"
           >
             <h2 className="text-base font-semibold text-foreground">Aguardando a entrevista</h2>
             <p className="max-w-sm text-sm text-muted-foreground">
