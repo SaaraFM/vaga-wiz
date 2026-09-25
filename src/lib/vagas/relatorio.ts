@@ -77,7 +77,7 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
 
   secao("Resumo da entrevista");
   for (const pergunta of PERGUNTAS) {
-    paragrafo(`${pergunta.rotulo}: ${dados.respostas[pergunta.campo] || "—"}`);
+    paragrafo(`${pergunta.rotulo}: ${dados.respostas[pergunta.campo] || "não informado"}`);
     y += 1;
   }
 
@@ -86,8 +86,8 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
     secao("Avaliação de qualidade (PLN)");
     paragrafo(`Gabarito de referência: ${dados.nomeGabarito}`);
     paragrafo(`Similaridade: ${(a.similarity * 100).toFixed(1)}%`);
-    paragrafo(`Nota: ${a.score}/100 — ${rotuloRelatorio(a.classification.label)}`, 10, "bold");
-    paragrafo(`Feedback: ${rotuloRelatorio(a.feedback.label)} — ${a.feedback.message}`);
+    paragrafo(`Nota: ${a.score}/100, ${rotuloRelatorio(a.classification.label)}`, 10, "bold");
+    paragrafo(`Feedback: ${rotuloRelatorio(a.feedback.label)}, ${a.feedback.message}`);
     if (a.missingTerms.length > 0) {
       paragrafo(`Termos ausentes: ${a.missingTerms.join(", ")}`);
     }
