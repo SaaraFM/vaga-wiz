@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, ClipboardCopy, FileText, Gauge } from "lucide-react";
+import { Check, ClipboardCopy, FileDown, FileText, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { evaluateDescription } from "@/lib/nlp";
 import { GABARITOS, sugerirGabarito } from "@/lib/vagas/gabaritos";
 import type { RespostasVaga } from "@/lib/vagas/perguntas";
+import { gerarRelatorioPdf } from "@/lib/vagas/relatorio";
 
 interface PainelResultadoProps {
   readonly respostas: RespostasVaga;
@@ -42,29 +43,66 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
     return evaluateDescription(descricao, textoGabarito);
   }, [descricao, textoGabarito]);
 
+  const [gerandoPdf, setGerandoPdf] = useState(false);
+
   async function copiarDescricao() {
     await navigator.clipboard.writeText(descricao);
     toast.success("Descrição copiada para a área de transferência.");
   }
 
+  async function baixarRelatorio() {
+    setGerandoPdf(true);
+    try {
+      await gerarRelatorioPdf({
+        respostas,
+        descricao,
+        avaliacao,
+        nomeGabarito: usarProprio
+          ? "Gabarito próprio"
+          : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).cargo,
+      });
+      toast.success("Relatório em PDF gerado.");
+    } catch {
+      toast.error("Não foi possível gerar o PDF. Tente novamente.");
+    } finally {
+      setGerandoPdf(false);
+    }
+  }
+
   return (
     <section aria-label="Resultado" className="flex h-full flex-col gap-4">
       <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <header className="mb-4 flex items-center justify-between gap-3">
+        <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-sm font-semibold">
             <FileText className="size-4 text-primary" aria-hidden />
             Descrição gerada
           </h2>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={copiarDescricao}
-          >
-            <ClipboardCopy className="size-4" aria-hidden />
-            Copiar
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={copiarDescricao}
+            >
+              <ClipboardCopy className="size-4" aria-hidden />
+              Copiar
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              className="gap-2"
+              onClick={baixarRelatorio}
+              disabled={gerandoPdf}
+            >
+              {gerandoPdf ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <FileDown className="size-4" aria-hidden />
+              )}
+              Relatório PDF
+            </Button>
+          </div>
         </header>
         <pre className="max-h-72 overflow-y-auto whitespace-pre-wrap rounded-xl bg-surface p-4 font-sans text-sm leading-relaxed text-foreground">
           {descricao}
