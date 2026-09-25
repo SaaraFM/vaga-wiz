@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Check, ClipboardCopy, FileDown, FileText, Gauge, Loader2 } from "lucide-react";
+import { Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -231,10 +231,7 @@ function Metrica({ rotulo, valor }: { readonly rotulo: string; readonly valor: s
 }
 
 function RingNota({ valor }: { readonly valor: number }) {
-  const raio = 26;
-  const circunferencia = 2 * Math.PI * raio;
   const nota = Math.min(Math.max(valor, 0), 100);
-  const preenchido = (nota / 100) * circunferencia;
 
   return (
     <div className="flex min-h-32 flex-col items-center justify-center rounded-xl border border-border bg-background px-4 py-4 text-center">
