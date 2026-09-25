@@ -166,7 +166,7 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
 
         {avaliacao ? (
           <div className="mt-5 space-y-5">
-            <div className="grid items-stretch gap-3 sm:grid-cols-3">
+            <div className="grid items-stretch gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(9rem,0.9fr)_minmax(0,1fr)]">
               <Metrica
                 rotulo="Similaridade"
                 valor={`${(avaliacao.similarity * 100).toFixed(1)}%`}
@@ -237,39 +237,38 @@ function RingNota({ valor }: { readonly valor: number }) {
   const preenchido = (nota / 100) * circunferencia;
 
   return (
-    <div className="flex items-center gap-4 rounded-xl border border-border bg-surface px-4 py-3">
-      <svg
-        viewBox="0 0 64 64"
-        className="size-16 -rotate-90"
-        role="img"
-        aria-label={`Nota ${Math.round(nota)} de 100`}
-      >
-        <circle
-          cx="32"
-          cy="32"
-          r={raio}
-          fill="none"
-          strokeWidth="6"
-          className="stroke-border"
-        />
-        <circle
-          cx="32"
-          cy="32"
-          r={raio}
-          fill="none"
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={`${preenchido} ${circunferencia}`}
-          className="stroke-primary transition-[stroke-dasharray] duration-700"
-        />
-      </svg>
-      <div>
-        <p className="text-xs text-muted-foreground">Nota</p>
-        <p className="font-display text-2xl font-bold text-foreground">
-          {Math.round(nota)}
-          <span className="text-sm font-medium text-muted-foreground">/100</span>
+    <div className="flex min-h-24 flex-col items-center justify-center rounded-xl border border-border bg-surface px-4 py-3 text-center">
+      <div className="relative size-20 shrink-0">
+        <svg
+          viewBox="0 0 64 64"
+          className="size-full -rotate-90"
+          role="img"
+          aria-label={`Nota ${Math.round(nota)} por cento`}
+        >
+          <circle
+            cx="32"
+            cy="32"
+            r={raio}
+            fill="none"
+            strokeWidth="5"
+            className="stroke-border"
+          />
+          <circle
+            cx="32"
+            cy="32"
+            r={raio}
+            fill="none"
+            strokeWidth="5"
+            strokeLinecap="round"
+            strokeDasharray={`${preenchido} ${circunferencia}`}
+            className="stroke-primary transition-[stroke-dasharray] duration-700"
+          />
+        </svg>
+        <p className="absolute inset-0 flex items-center justify-center font-display text-lg font-bold text-foreground">
+          {Math.round(nota)}%
         </p>
       </div>
+      <p className="mt-1 text-xs text-muted-foreground">Nota de qualidade</p>
     </div>
   );
 }
