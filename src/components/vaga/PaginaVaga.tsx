@@ -27,7 +27,7 @@ export function PaginaVaga() {
               Processamento de Linguagem Natural
             </span>
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          <h1 className="font-display text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
             Criador de Descrição de Vagas
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
