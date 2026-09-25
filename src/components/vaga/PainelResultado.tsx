@@ -73,7 +73,7 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
     <section aria-label="Resultado" className="flex h-full flex-col gap-4">
       <article className="rounded-2xl border border-border bg-card p-5 shadow-sm">
         <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-2 text-sm font-semibold">
+          <h2 className="flex items-center gap-2 font-display text-sm font-semibold">
             <FileText className="size-4 text-primary" aria-hidden />
             Descrição gerada
           </h2>
@@ -110,7 +110,7 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
       </article>
 
       <article className="flex-1 rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold">
+        <h2 className="mb-4 flex items-center gap-2 font-display text-sm font-semibold">
           <Gauge className="size-4 text-primary" aria-hidden />
           Avaliação por PLN (TF-IDF + similaridade do cosseno)
         </h2>
@@ -166,12 +166,12 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
 
         {avaliacao ? (
           <div className="mt-5 space-y-5">
-            <div className="grid gap-3 sm:grid-cols-3">
+            <div className="grid items-stretch gap-3 sm:grid-cols-3">
               <Metrica
                 rotulo="Similaridade"
                 valor={`${(avaliacao.similarity * 100).toFixed(1)}%`}
               />
-              <Metrica rotulo="Nota" valor={`${avaliacao.score}/100`} />
+              <RingNota valor={avaliacao.score} />
               <Metrica rotulo="Classificação" valor={avaliacao.classification.label} />
             </div>
 
@@ -225,7 +225,51 @@ function Metrica({ rotulo, valor }: { readonly rotulo: string; readonly valor: s
   return (
     <div className="rounded-xl border border-border bg-surface px-4 py-3">
       <p className="text-xs text-muted-foreground">{rotulo}</p>
-      <p className="mt-1 text-lg font-semibold text-foreground">{valor}</p>
+      <p className="mt-1 font-display text-lg font-semibold text-foreground">{valor}</p>
+    </div>
+  );
+}
+
+function RingNota({ valor }: { readonly valor: number }) {
+  const raio = 26;
+  const circunferencia = 2 * Math.PI * raio;
+  const nota = Math.min(Math.max(valor, 0), 100);
+  const preenchido = (nota / 100) * circunferencia;
+
+  return (
+    <div className="flex items-center gap-4 rounded-xl border border-border bg-surface px-4 py-3">
+      <svg
+        viewBox="0 0 64 64"
+        className="size-16 -rotate-90"
+        role="img"
+        aria-label={`Nota ${Math.round(nota)} de 100`}
+      >
+        <circle
+          cx="32"
+          cy="32"
+          r={raio}
+          fill="none"
+          strokeWidth="6"
+          className="stroke-border"
+        />
+        <circle
+          cx="32"
+          cy="32"
+          r={raio}
+          fill="none"
+          strokeWidth="6"
+          strokeLinecap="round"
+          strokeDasharray={`${preenchido} ${circunferencia}`}
+          className="stroke-primary transition-[stroke-dasharray] duration-700"
+        />
+      </svg>
+      <div>
+        <p className="text-xs text-muted-foreground">Nota</p>
+        <p className="font-display text-2xl font-bold text-foreground">
+          {Math.round(nota)}
+          <span className="text-sm font-medium text-muted-foreground">/100</span>
+        </p>
+      </div>
     </div>
   );
 }

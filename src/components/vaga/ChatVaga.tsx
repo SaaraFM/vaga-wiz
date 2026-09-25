@@ -107,7 +107,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
             <Bot className="size-4.5" aria-hidden />
           </span>
           <div>
-            <h2 className="text-sm font-semibold">Assistente de vagas</h2>
+            <h2 className="font-display text-sm font-semibold">Assistente de vagas</h2>
             <p className="text-xs text-muted-foreground">
               {finalizado
                 ? "Entrevista concluída"
