@@ -178,7 +178,7 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
           </TabsContent>
 
           <TabsContent value="criar" forceMount className="data-[state=inactive]:hidden">
-            <CriadorGabarito onChange={setGabaritoCriado} />
+            <CriadorGabarito onChange={setGabaritoCriado} textoInicial={gabaritoCriadoInicial} />
           </TabsContent>
         </Tabs>
 

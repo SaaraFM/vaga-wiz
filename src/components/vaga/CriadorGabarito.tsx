@@ -67,12 +67,24 @@ function montarTexto(valores: Record<CampoGabarito, string>): string {
     .join("\n");
 }
 
-interface CriadorGabaritoProps {
-  readonly onChange: (texto: string) => void;
+function desmontarTexto(texto: string): Record<CampoGabarito, string> {
+  const valores = { ...VAZIO };
+  for (const linha of texto.split("\n")) {
+    const campo = CAMPOS.find((c) => linha.startsWith(`${c.rotulo}: `));
+    if (campo) valores[campo.id] = linha.slice(campo.rotulo.length + 2);
+  }
+  return valores;
 }
 
-export function CriadorGabarito({ onChange }: CriadorGabaritoProps) {
-  const [valores, setValores] = useState(VAZIO);
+interface CriadorGabaritoProps {
+  readonly onChange: (texto: string) => void;
+  readonly textoInicial?: string;
+}
+
+export function CriadorGabarito({ onChange, textoInicial = "" }: CriadorGabaritoProps) {
+  const [valores, setValores] = useState(() =>
+    textoInicial.trim() ? desmontarTexto(textoInicial) : VAZIO,
+  );
 
   useEffect(() => {
     onChange(montarTexto(valores));
