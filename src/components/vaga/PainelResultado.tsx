@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CriadorGabarito } from "./CriadorGabarito";
-import { Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
+import { BookMarked, Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +40,16 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
   );
   const [gabaritoCriado, setGabaritoCriado] = useState(gabaritoCriadoInicial);
   const usarProprio = modo !== "banco";
+  const gabaritoEmUso = usarProprio
+    ? modo === "criar"
+      ? "Gabarito criado pelo empregador"
+      : "Gabarito próprio"
+    : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).cargo;
+  const origemGabarito = usarProprio
+    ? "definido por você"
+    : gabaritoId === gabaritoSugerido.id
+      ? "sugerido automaticamente para o cargo"
+      : "escolhido no banco";
 
   const textoGabarito = usarProprio
     ? modo === "criar"
@@ -125,6 +135,14 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
           <Gauge className="size-4 text-primary" aria-hidden />
           Avaliação por PLN (TF-IDF + similaridade do cosseno)
         </h2>
+
+        <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <BookMarked className="size-4 shrink-0 text-primary" aria-hidden />
+          <span>
+            Gabarito em uso: <strong className="text-foreground">{gabaritoEmUso}</strong>,{" "}
+            {origemGabarito}
+          </span>
+        </p>
 
         <Tabs
           value={modo}
