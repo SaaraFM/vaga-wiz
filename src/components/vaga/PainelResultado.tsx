@@ -136,6 +136,14 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
           Avaliação por PLN (TF-IDF + similaridade do cosseno)
         </h2>
 
+        <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+          <BookMarked className="size-4 shrink-0 text-primary" aria-hidden />
+          <span>
+            Gabarito em uso: <strong className="text-foreground">{gabaritoEmUso}</strong>,{" "}
+            {origemGabarito}
+          </span>
+        </p>
+
         <Tabs
           value={modo}
           onValueChange={(valor) =>
