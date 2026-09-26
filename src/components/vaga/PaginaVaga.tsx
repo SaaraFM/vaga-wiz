@@ -57,19 +57,11 @@ export function PaginaVaga() {
       <Toaster position="top-center" />
 
       <main className="mx-auto grid min-h-screen max-w-7xl items-stretch gap-6 px-4 py-6 sm:px-6 lg:h-screen lg:grid-cols-[25rem_minmax(0,1fr)] lg:px-8">
-        <div className="flex min-h-[38rem] flex-col gap-6 lg:min-h-0 lg:overflow-y-auto">
-          <div className="min-h-[38rem] shrink-0 lg:min-h-0">
-            <ChatVaga
-              onConcluir={(respostas) => setVaga({ respostas, descricao: gerarDescricao(respostas) })}
-              onReiniciar={() => setVaga(null)}
-            />
-          </div>
-          {!vaga && (
-            <div className="shrink-0">
-              {botaoCriar}
-              {criarAberto && <div className="mt-4">{painelCriador}</div>}
-            </div>
-          )}
+        <div className="min-h-[38rem] lg:min-h-0">
+          <ChatVaga
+            onConcluir={(respostas) => setVaga({ respostas, descricao: gerarDescricao(respostas) })}
+            onReiniciar={() => setVaga(null)}
+          />
         </div>
 
         {vaga ? (
