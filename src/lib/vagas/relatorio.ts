@@ -70,10 +70,7 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
 
   paragrafo("Relatório da vaga", 18, "bold");
   y += 1;
-  paragrafo(
-    `${dados.respostas.cargo} · gerado em ${new Date().toLocaleString("pt-BR")}`,
-    9,
-  );
+  paragrafo(`${dados.respostas.cargo} · gerado em ${new Date().toLocaleString("pt-BR")}`, 9);
 
   secao("Resumo da entrevista");
   for (const pergunta of PERGUNTAS) {
