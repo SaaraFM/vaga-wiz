@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { CriadorGabarito } from "./CriadorGabarito";
 import { Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,10 +33,14 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
 
   const [gabaritoId, setGabaritoId] = useState(gabaritoSugerido.id);
   const [gabaritoProprio, setGabaritoProprio] = useState("");
-  const [usarProprio, setUsarProprio] = useState(false);
+  const [modo, setModo] = useState<"banco" | "proprio" | "criar">("banco");
+  const [gabaritoCriado, setGabaritoCriado] = useState("");
+  const usarProprio = modo !== "banco";
 
   const textoGabarito = usarProprio
-    ? gabaritoProprio
+    ? modo === "criar"
+      ? gabaritoCriado
+      : gabaritoProprio
     : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).descricao;
 
   const avaliacao = useMemo(() => {
@@ -58,7 +63,9 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
         descricao,
         avaliacao,
         nomeGabarito: usarProprio
-          ? "Gabarito próprio"
+          ? modo === "criar"
+            ? "Gabarito criado pelo empregador"
+            : "Gabarito próprio"
           : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).cargo,
       });
       toast.success("Relatório em PDF gerado.");
@@ -116,12 +123,15 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
         </h2>
 
         <Tabs
-          value={usarProprio ? "proprio" : "banco"}
-          onValueChange={(valor) => setUsarProprio(valor === "proprio")}
+          value={modo}
+          onValueChange={(valor) =>
+            setModo(valor === "proprio" || valor === "criar" ? valor : "banco")
+          }
         >
-          <TabsList className="mb-4">
+          <TabsList className="mb-4 h-auto flex-wrap">
             <TabsTrigger value="banco">Banco de gabaritos</TabsTrigger>
             <TabsTrigger value="proprio">Gabarito próprio</TabsTrigger>
+            <TabsTrigger value="criar">Criar gabarito</TabsTrigger>
           </TabsList>
 
           <TabsContent value="banco">
@@ -161,6 +171,10 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
               placeholder="Buscamos desenvolvedor Python com experiência em APIs REST, banco de dados..."
               className="resize-none"
             />
+          </TabsContent>
+
+          <TabsContent value="criar" forceMount className="data-[state=inactive]:hidden">
+            <CriadorGabarito onChange={setGabaritoCriado} />
           </TabsContent>
         </Tabs>
 
