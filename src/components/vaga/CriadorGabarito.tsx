@@ -4,12 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
 type CampoGabarito =
-  | "titulo"
-  | "resumo"
-  | "responsabilidades"
-  | "requisitos"
-  | "tecnologias"
-  | "beneficios";
+  "titulo" | "resumo" | "responsabilidades" | "requisitos" | "tecnologias" | "beneficios";
 
 interface DefinicaoCampo {
   readonly id: CampoGabarito;
@@ -19,12 +14,42 @@ interface DefinicaoCampo {
 }
 
 const CAMPOS: readonly DefinicaoCampo[] = [
-  { id: "titulo", rotulo: "Título da vaga", placeholder: "Desenvolvedor Python Júnior", multilinha: false },
-  { id: "resumo", rotulo: "Resumo", placeholder: "Buscamos profissional para desenvolver APIs...", multilinha: true },
-  { id: "responsabilidades", rotulo: "Responsabilidades", placeholder: "Desenvolver APIs, revisar código, escrever testes", multilinha: true },
-  { id: "requisitos", rotulo: "Requisitos", placeholder: "Python, lógica de programação, Git", multilinha: true },
-  { id: "tecnologias", rotulo: "Tecnologias", placeholder: "Python, Django, PostgreSQL", multilinha: false },
-  { id: "beneficios", rotulo: "Benefícios", placeholder: "Vale-refeição, plano de saúde, home office", multilinha: false },
+  {
+    id: "titulo",
+    rotulo: "Título da vaga",
+    placeholder: "Desenvolvedor Python Júnior",
+    multilinha: false,
+  },
+  {
+    id: "resumo",
+    rotulo: "Resumo",
+    placeholder: "Buscamos profissional para desenvolver APIs...",
+    multilinha: true,
+  },
+  {
+    id: "responsabilidades",
+    rotulo: "Responsabilidades",
+    placeholder: "Desenvolver APIs, revisar código, escrever testes",
+    multilinha: true,
+  },
+  {
+    id: "requisitos",
+    rotulo: "Requisitos",
+    placeholder: "Python, lógica de programação, Git",
+    multilinha: true,
+  },
+  {
+    id: "tecnologias",
+    rotulo: "Tecnologias",
+    placeholder: "Python, Django, PostgreSQL",
+    multilinha: false,
+  },
+  {
+    id: "beneficios",
+    rotulo: "Benefícios",
+    placeholder: "Vale-refeição, plano de saúde, home office",
+    multilinha: false,
+  },
 ];
 
 const VAZIO: Record<CampoGabarito, string> = {
