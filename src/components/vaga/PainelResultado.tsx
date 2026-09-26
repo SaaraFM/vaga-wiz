@@ -17,6 +17,7 @@ import { gerarRelatorioPdf } from "@/lib/vagas/relatorio";
 interface PainelResultadoProps {
   readonly respostas: RespostasVaga;
   readonly descricao: string;
+  readonly gabaritoCriadoInicial?: string;
 }
 
 const CORES_FEEDBACK: Record<string, string> = {
@@ -25,16 +26,19 @@ const CORES_FEEDBACK: Record<string, string> = {
   "nao-entendeu": "bg-destructive text-destructive-foreground",
 };
 
-export function PainelResultado({ respostas, descricao }: PainelResultadoProps) {
+export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = "" }: PainelResultadoProps) {
   const gabaritoSugerido = useMemo(
     () => sugerirGabarito(respostas.cargo, respostas.area),
     [respostas.cargo, respostas.area],
   );
 
+  const temGabaritoCriado = gabaritoCriadoInicial.trim().length >= 20;
   const [gabaritoId, setGabaritoId] = useState(gabaritoSugerido.id);
   const [gabaritoProprio, setGabaritoProprio] = useState("");
-  const [modo, setModo] = useState<"banco" | "proprio" | "criar">("banco");
-  const [gabaritoCriado, setGabaritoCriado] = useState("");
+  const [modo, setModo] = useState<"banco" | "proprio" | "criar">(
+    temGabaritoCriado ? "criar" : "banco",
+  );
+  const [gabaritoCriado, setGabaritoCriado] = useState(gabaritoCriadoInicial);
   const usarProprio = modo !== "banco";
 
   const textoGabarito = usarProprio
@@ -174,7 +178,7 @@ export function PainelResultado({ respostas, descricao }: PainelResultadoProps) 
           </TabsContent>
 
           <TabsContent value="criar" forceMount className="data-[state=inactive]:hidden">
-            <CriadorGabarito onChange={setGabaritoCriado} />
+            <CriadorGabarito onChange={setGabaritoCriado} textoInicial={gabaritoCriadoInicial} />
           </TabsContent>
         </Tabs>
 
