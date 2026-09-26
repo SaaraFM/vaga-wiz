@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, ClipboardList, X } from "lucide-react";
+import { BookMarked, Check, ClipboardList, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { Toaster } from "@/components/ui/sonner";
@@ -18,6 +18,7 @@ interface EstadoVaga {
 export function PaginaVaga() {
   const [vaga, setVaga] = useState<EstadoVaga | null>(null);
   const [gabaritoCriado, setGabaritoCriado] = useState("");
+  const [gabaritoConfirmado, setGabaritoConfirmado] = useState("");
   const [criarAberto, setCriarAberto] = useState(false);
 
   return (
@@ -35,6 +36,18 @@ export function PaginaVaga() {
 
           {!vaga && (
             <div className="shrink-0 pb-2">
+              <div className="mb-3 flex items-start gap-3 rounded-xl border border-border bg-card px-4 py-3 shadow-lg">
+                <BookMarked className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                <p className="text-sm text-muted-foreground">
+                  Gabarito em uso:{" "}
+                  <strong className="text-foreground">
+                    {gabaritoConfirmado
+                      ? "Gabarito criado pelo empregador"
+                      : "Seleção automática conforme o cargo"}
+                  </strong>
+                </p>
+              </div>
+
               <Button
                 type="button"
                 variant="outline"
@@ -57,7 +70,10 @@ export function PaginaVaga() {
                     <span className="h-5 w-1.5 rounded-full bg-primary" aria-hidden />
                     Criar novo gabarito
                   </h2>
-                  <CriadorGabarito onChange={setGabaritoCriado} />
+                  <CriadorGabarito
+                    onChange={setGabaritoCriado}
+                    textoInicial={gabaritoConfirmado}
+                  />
                   <div className="mt-4 flex flex-col gap-2">
                     <Button
                       type="button"
@@ -65,6 +81,7 @@ export function PaginaVaga() {
                       className="w-full gap-2"
                       disabled={gabaritoCriado.trim().length < 20}
                       onClick={() => {
+                         setGabaritoConfirmado(gabaritoCriado);
                         setCriarAberto(false);
                         toast.success(
                           "Gabarito salvo. Ele será usado como referência na avaliação ao final da entrevista.",
@@ -90,7 +107,7 @@ export function PaginaVaga() {
           <PainelResultado
             respostas={vaga.respostas}
             descricao={vaga.descricao}
-            gabaritoCriadoInicial={gabaritoCriado}
+            gabaritoCriadoInicial={gabaritoConfirmado}
           />
         ) : (
           <section
