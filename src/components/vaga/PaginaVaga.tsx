@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { ClipboardList, X } from "lucide-react";
+import { Check, ClipboardList, X } from "lucide-react";
+import { toast } from "sonner";
 
 import { Toaster } from "@/components/ui/sonner";
 import { Button } from "@/components/ui/button";
@@ -57,12 +58,28 @@ export function PaginaVaga() {
                     Criar novo gabarito
                   </h2>
                   <CriadorGabarito onChange={setGabaritoCriado} />
-                  {gabaritoCriado.trim().length >= 20 && (
-                    <p className="mt-3 text-xs text-muted-foreground">
-                      Gabarito pronto. Ele será usado como referência na avaliação ao final da
-                      entrevista.
-                    </p>
-                  )}
+                  <div className="mt-4 flex flex-col gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="w-full gap-2"
+                      disabled={gabaritoCriado.trim().length < 20}
+                      onClick={() => {
+                        setCriarAberto(false);
+                        toast.success(
+                          "Gabarito salvo. Ele será usado como referência na avaliação ao final da entrevista.",
+                        );
+                      }}
+                    >
+                      <Check className="size-4" aria-hidden />
+                      Confirmar gabarito
+                    </Button>
+                    {gabaritoCriado.trim().length < 20 && (
+                      <p className="text-xs text-muted-foreground">
+                        Preencha os campos (mínimo de 20 caracteres no total) para confirmar.
+                      </p>
+                    )}
+                  </div>
                 </article>
               )}
             </div>
