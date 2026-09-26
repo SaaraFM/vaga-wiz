@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CriadorGabarito } from "./CriadorGabarito";
-import { Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
+import { BookMarked, Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -40,6 +40,16 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
   );
   const [gabaritoCriado, setGabaritoCriado] = useState(gabaritoCriadoInicial);
   const usarProprio = modo !== "banco";
+  const gabaritoEmUso = usarProprio
+    ? modo === "criar"
+      ? "Gabarito criado pelo empregador"
+      : "Gabarito próprio"
+    : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).cargo;
+  const origemGabarito = usarProprio
+    ? "definido por você"
+    : gabaritoId === gabaritoSugerido.id
+      ? "sugerido automaticamente para o cargo"
+      : "escolhido no banco";
 
   const textoGabarito = usarProprio
     ? modo === "criar"
