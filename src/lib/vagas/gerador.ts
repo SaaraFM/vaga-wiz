@@ -29,24 +29,24 @@ export function gerarDescricao(respostas: RespostasVaga): string {
   const resumo = `Estamos buscando um(a) ${cargo} ${nivel ? `de nível ${nivel.toLowerCase()} ` : ""}para atuar na área de ${area.toLowerCase()}. A pessoa selecionada participará do desenvolvimento e da evolução de soluções, trabalhando com ${tecnologias.toLowerCase()} em um ambiente colaborativo e orientado a resultados.`;
 
   const blocos = [
-    `# ${cargo}`,
+    cargo,
     "",
-    "## Resumo da oportunidade",
+    "Resumo da oportunidade",
     resumo,
     "",
-    "## Responsabilidades",
+    "Responsabilidades",
     ...listar(responsabilidades).map((item) => `- ${capitalizar(item)}`),
     "",
-    "## Requisitos",
+    "Requisitos",
     ...listar(requisitos).map((item) => `- ${capitalizar(item)}`),
     "",
-    "## Tecnologias",
+    "Tecnologias",
     ...listar(tecnologias).map((item) => `- ${capitalizar(item)}`),
     "",
-    "## Benefícios",
+    "Benefícios",
     ...listar(beneficios).map((item) => `- ${capitalizar(item)}`),
     "",
-    "## Modelo de trabalho",
+    "Modelo de trabalho",
     capitalizar(modeloTrabalho),
   ];
 

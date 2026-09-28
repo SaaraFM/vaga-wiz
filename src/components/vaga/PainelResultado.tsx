@@ -1,23 +1,24 @@
-import { useMemo, useState } from "react";
-import { CriadorGabarito } from "./CriadorGabarito";
-import { BookMarked, Check, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
+import { useMemo, useState, type ReactNode } from "react";
+import { BookMarked, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 import { evaluateDescription } from "@/lib/nlp";
-import { GABARITOS, sugerirGabarito } from "@/lib/vagas/gabaritos";
+import { sugerirGabarito } from "@/lib/vagas/gabaritos";
+import { encontrarGabarito, type CustomTemplate, type SelectedTemplate } from "@/lib/vagas/modelos";
 import type { RespostasVaga } from "@/lib/vagas/perguntas";
 import { gerarRelatorioPdf } from "@/lib/vagas/relatorio";
 
 interface PainelResultadoProps {
   readonly respostas: RespostasVaga;
   readonly descricao: string;
-  readonly gabaritoCriadoInicial?: string;
+  readonly selecao: SelectedTemplate;
+  readonly gabaritosCustomizados: readonly CustomTemplate[];
+  readonly seletor: ReactNode;
+  readonly onCorrigirNivel: () => void;
 }
 
 const CORES_FEEDBACK: Record<string, string> = {
@@ -26,43 +27,53 @@ const CORES_FEEDBACK: Record<string, string> = {
   "nao-entendeu": "bg-destructive text-destructive-foreground",
 };
 
-export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = "" }: PainelResultadoProps) {
+function normalizar(texto: string): string {
+  return texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase();
+}
+
+function detectarInconsistencia(cargo: string, nivel: string): string | null {
+  const cargoNormalizado = normalizar(cargo);
+  const nivelNormalizado = normalizar(nivel);
+  const niveis = [
+    { texto: "Júnior", normalizado: "junior" },
+    { texto: "Pleno", normalizado: "pleno" },
+    { texto: "Sênior", normalizado: "senior" },
+  ];
+  const nivelNoCargo = niveis.find((item) => cargoNormalizado.includes(item.normalizado));
+  if (!nivelNoCargo || !nivelNormalizado.includes(nivelNoCargo.normalizado)) return nivelNoCargo?.texto ?? null;
+  return null;
+}
+
+export function PainelResultado({
+  respostas,
+  descricao,
+  selecao,
+  gabaritosCustomizados,
+  seletor,
+  onCorrigirNivel,
+}: PainelResultadoProps) {
   const gabaritoSugerido = useMemo(
     () => sugerirGabarito(respostas.cargo, respostas.area),
     [respostas.cargo, respostas.area],
   );
-
-  const temGabaritoCriado = gabaritoCriadoInicial.trim().length >= 20;
-  const [gabaritoId, setGabaritoId] = useState(gabaritoSugerido.id);
-  const [gabaritoProprio, setGabaritoProprio] = useState("");
-  const [modo, setModo] = useState<"banco" | "proprio" | "criar">(
-    temGabaritoCriado ? "criar" : "banco",
-  );
-  const [gabaritoCriado, setGabaritoCriado] = useState(gabaritoCriadoInicial);
-  const usarProprio = modo !== "banco";
-  const gabaritoEmUso = usarProprio
-    ? modo === "criar"
-      ? "Gabarito criado pelo empregador"
-      : "Gabarito próprio"
-    : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).cargo;
-  const origemGabarito = usarProprio
-    ? "definido por você"
-    : gabaritoId === gabaritoSugerido.id
+  const gabaritoEmUso = encontrarGabarito(selecao, gabaritosCustomizados, gabaritoSugerido);
+  const origemGabarito =
+    selecao.source === "automatic"
       ? "sugerido automaticamente para o cargo"
-      : "escolhido no banco";
-
-  const textoGabarito = usarProprio
-    ? modo === "criar"
-      ? gabaritoCriado
-      : gabaritoProprio
-    : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).descricao;
+      : selecao.source === "custom"
+        ? "definido por você"
+        : "escolhido no banco";
 
   const avaliacao = useMemo(() => {
-    if (textoGabarito.trim().length < 20) return null;
-    return evaluateDescription(descricao, textoGabarito);
-  }, [descricao, textoGabarito]);
+    if (gabaritoEmUso.descricao.trim().length < 20) return null;
+    return evaluateDescription(descricao, gabaritoEmUso.descricao);
+  }, [descricao, gabaritoEmUso]);
 
   const [gerandoPdf, setGerandoPdf] = useState(false);
+  const [mostrarAviso, setMostrarAviso] = useState(true);
 
   async function copiarDescricao() {
     await navigator.clipboard.writeText(descricao);
@@ -76,11 +87,7 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
         respostas,
         descricao,
         avaliacao,
-        nomeGabarito: usarProprio
-          ? modo === "criar"
-            ? "Gabarito criado pelo empregador"
-            : "Gabarito próprio"
-          : (GABARITOS.find((g) => g.id === gabaritoId) ?? gabaritoSugerido).cargo,
+        nomeGabarito: gabaritoEmUso.nome,
       });
       toast.success("Relatório em PDF gerado.");
     } catch {
@@ -91,12 +98,12 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
   }
 
   return (
-    <section aria-label="Resultado" className="flex h-full min-h-0 flex-col gap-6">
-      <article className="flex min-h-0 flex-1 flex-col rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
-        <header className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="flex items-center gap-3 font-display text-xl font-bold">
-            <span className="h-6 w-1.5 rounded-full bg-primary" aria-hidden />
-            Descrição gerada
+    <section aria-label="Resultado" className="flex min-w-0 flex-col gap-6">
+      <article className="order-2 min-w-0 rounded-2xl border border-border bg-card p-5 shadow-xl sm:p-6">
+        <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-2 font-display text-lg font-bold">
+            <span className="h-5 w-1 rounded-full bg-primary" aria-hidden />
+            Descrição
           </h2>
           <div className="flex gap-2">
             <Button
@@ -125,12 +132,12 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
             </Button>
           </div>
         </header>
-        <pre className="min-h-0 flex-1 overflow-y-auto whitespace-pre-wrap pr-2 font-sans text-sm leading-relaxed text-foreground">
+        <pre className="max-w-full whitespace-pre-wrap wrap-break-word font-sans text-sm leading-relaxed text-foreground">
           {descricao}
         </pre>
       </article>
 
-      <article className="rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
+      <article className="order-1 rounded-2xl border border-border bg-card p-6 shadow-xl sm:p-8">
         <h2 className="mb-5 flex items-center gap-2 font-display text-xs font-bold uppercase text-muted-foreground">
           <Gauge className="size-4 text-primary" aria-hidden />
           Avaliação por PLN (TF-IDF + similaridade do cosseno)
@@ -139,79 +146,40 @@ export function PainelResultado({ respostas, descricao, gabaritoCriadoInicial = 
         <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <BookMarked className="size-4 shrink-0 text-primary" aria-hidden />
           <span>
-            Gabarito em uso: <strong className="text-foreground">{gabaritoEmUso}</strong>,{" "}
+            <strong className="text-foreground">{gabaritoEmUso.nome}</strong>,{" "}
             {origemGabarito}
           </span>
         </p>
+          <div className="mb-5">{seletor}</div>
 
-        <Tabs
-          value={modo}
-          onValueChange={(valor) =>
-            setModo(valor === "proprio" || valor === "criar" ? valor : "banco")
-          }
-        >
-          <TabsList className="mb-4 h-auto flex-wrap">
-            <TabsTrigger value="banco">Banco de gabaritos</TabsTrigger>
-            <TabsTrigger value="proprio">Gabarito próprio</TabsTrigger>
-            <TabsTrigger value="criar">Criar gabarito</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="banco">
-            <div className="flex flex-wrap gap-2">
-              {GABARITOS.map((gabarito) => {
-                const ativo = gabarito.id === gabaritoId;
-                return (
-                  <button
-                    key={gabarito.id}
-                    type="button"
-                    onClick={() => setGabaritoId(gabarito.id)}
-                    aria-pressed={ativo}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                      ativo
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : "border-border bg-surface text-muted-foreground hover:border-primary hover:text-foreground",
-                    )}
-                  >
-                    {ativo && <Check className="size-3" aria-hidden />}
-                    {gabarito.cargo}
-                  </button>
-                );
-              })}
+          {mostrarAviso && detectarInconsistencia(respostas.cargo, respostas.nivel) && (
+            <div className="mb-5 rounded-xl border border-warning/60 bg-warning/10 p-4 text-sm">
+              <p className="font-medium text-foreground">
+                Possível inconsistência: o cargo informado contém “{detectarInconsistencia(respostas.cargo, respostas.nivel)}”, mas o nível selecionado foi “{respostas.nivel}”.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={() => setMostrarAviso(false)}>
+                  Manter assim
+                </Button>
+                <Button type="button" variant="ghost" size="sm" onClick={onCorrigirNivel}>
+                  Corrigir/alterar resposta
+                </Button>
+              </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="proprio">
-            <label htmlFor="gabarito-proprio" className="mb-2 block text-xs text-muted-foreground">
-              Cole a descrição ideal usada como referência.
-            </label>
-            <Textarea
-              id="gabarito-proprio"
-              rows={5}
-              value={gabaritoProprio}
-              onChange={(event) => setGabaritoProprio(event.target.value)}
-              placeholder="Buscamos desenvolvedor Python com experiência em APIs REST, banco de dados..."
-              className="resize-none"
-            />
-          </TabsContent>
-
-          <TabsContent value="criar" forceMount className="data-[state=inactive]:hidden">
-            <CriadorGabarito onChange={setGabaritoCriado} textoInicial={gabaritoCriadoInicial} />
-          </TabsContent>
-        </Tabs>
+          )}
 
         {avaliacao ? (
           <div className="mt-6 space-y-5">
-            <div className="grid items-stretch gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(9rem,0.9fr)_minmax(0,1fr)]">
+            <div className="grid min-w-0 items-stretch gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(9rem,0.9fr)_minmax(0,1fr)]">
               <Metrica
-                rotulo="Similaridade"
+                rotulo="Similaridade técnica"
                 valor={`${(avaliacao.similarity * 100).toFixed(1)}%`}
               />
               <RingNota valor={avaliacao.score} />
               <Metrica rotulo="Classificação" valor={avaliacao.classification.label} />
             </div>
 
-            <Progress value={avaliacao.score} aria-label="Nota da descrição" />
+            <Progress value={avaliacao.score} aria-label="Aderência ao gabarito" />
 
             <div className="rounded-xl bg-surface p-4">
               <Badge className={cn("mb-2", CORES_FEEDBACK[avaliacao.feedback.level])}>
@@ -302,7 +270,7 @@ function RingNota({ valor }: { readonly valor: number }) {
           {Math.round(nota)}%
         </p>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Nota de qualidade</p>
+      <p className="mt-2 text-xs text-muted-foreground">Aderência ao gabarito</p>
     </div>
   );
 }

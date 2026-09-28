@@ -37,11 +37,14 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
 
   const finalizado = indice >= PERGUNTAS.length;
   const perguntaAtual = PERGUNTAS[indice];
-  const fimDaListaRef = useRef<HTMLDivElement>(null);
+  const areaMensagensRef = useRef<HTMLDivElement>(null);
   const campoRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    fimDaListaRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const areaMensagens = areaMensagensRef.current;
+    if (areaMensagens) {
+      areaMensagens.scrollTo({ top: areaMensagens.scrollHeight, behavior: "smooth" });
+    }
   }, [mensagens]);
 
   useEffect(() => {
@@ -99,7 +102,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
   return (
     <section
       aria-label="Chatbot de criação de vaga"
-      className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
+      className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-xl"
     >
       <header className="flex items-center justify-between gap-3 border-b border-border px-5 py-5 sm:px-6">
         <div className="flex items-center gap-3">
@@ -128,7 +131,8 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
       />
 
       <div
-        className="flex-1 space-y-5 overflow-y-auto px-5 py-6 sm:px-6"
+        ref={areaMensagensRef}
+        className="min-h-0 min-w-0 flex-1 space-y-5 overflow-x-hidden overflow-y-auto overscroll-contain px-5 py-6 sm:px-6"
         role="log"
         aria-live="polite"
       >
@@ -162,7 +166,6 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
             )}
           </div>
         ))}
-        <div ref={fimDaListaRef} />
       </div>
 
       {perguntaAtual ? (

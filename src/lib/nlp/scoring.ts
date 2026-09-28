@@ -20,30 +20,30 @@ export function similarityToScore(similarity: number): number {
 }
 
 export function classifyScore(score: number): Classification {
-  if (score <= 40) return { level: "baixa", label: "Baixa qualidade" };
-  if (score <= 70) return { level: "intermediaria", label: "Qualidade intermediária" };
-  if (score <= 90) return { level: "boa", label: "Boa descrição" };
-  return { level: "excelente", label: "Excelente descrição" };
+  if (score <= 40) return { level: "baixa", label: "Baixa aderência" };
+  if (score <= 70) return { level: "intermediaria", label: "Aderência intermediária" };
+  if (score <= 90) return { level: "boa", label: "Boa aderência" };
+  return { level: "excelente", label: "Excelente aderência" };
 }
 
 export function buildFeedback(score: number): Feedback {
   if (score > 80) {
     return {
       level: "entendeu",
-      label: "Entendeu",
-      message: "A descrição possui grande similaridade com o modelo esperado.",
+      label: "Alta aderência",
+      message: "A descrição possui alta aderência textual ao gabarito selecionado.",
     };
   }
   if (score >= 50) {
     return {
       level: "parcial",
-      label: "Parcial",
-      message: "A descrição possui alguns elementos importantes, mas pode ser melhorada.",
+      label: "Aderência parcial",
+      message: "A descrição possui alguns elementos do gabarito, mas pode ser aproximada da referência.",
     };
   }
   return {
     level: "nao-entendeu",
-    label: "Não entendeu",
-    message: "A descrição possui pouca relação com o modelo esperado.",
+    label: "Baixa aderência",
+    message: "A descrição possui pouca relação textual com o gabarito selecionado.",
   };
 }

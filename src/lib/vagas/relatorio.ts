@@ -12,9 +12,18 @@ interface DadosRelatorio {
 
 /** Termos do relatório redigidos de forma diferente da tela. */
 const ROTULOS_RELATORIO: Record<string, string> = {
-  "Baixa qualidade": "Baixa compatibilidade",
-  "Não entendeu": "Não atendeu",
+  "Baixa aderência": "Baixa aderência",
+  "Não entendeu": "Baixa aderência",
 };
+
+const SECOES_DESCRICAO = new Set([
+  "Resumo da oportunidade",
+  "Responsabilidades",
+  "Requisitos",
+  "Tecnologias",
+  "Benefícios",
+  "Modelo de trabalho",
+]);
 
 function rotuloRelatorio(rotulo: string): string {
   return ROTULOS_RELATORIO[rotulo] ?? rotulo;
@@ -80,10 +89,10 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
 
   if (dados.avaliacao) {
     const a = dados.avaliacao;
-    secao("Avaliação de qualidade (PLN)");
+    secao("Aderência ao gabarito (PLN)");
     paragrafo(`Gabarito de referência: ${dados.nomeGabarito}`);
     paragrafo(`Similaridade: ${(a.similarity * 100).toFixed(1)}%`);
-    paragrafo(`Nota: ${a.score}/100, ${rotuloRelatorio(a.classification.label)}`, 10, "bold");
+    paragrafo(`Aderência: ${a.score}/100, ${rotuloRelatorio(a.classification.label)}`, 10, "bold");
     paragrafo(`Feedback: ${rotuloRelatorio(a.feedback.label)}, ${a.feedback.message}`);
     if (a.missingTerms.length > 0) {
       paragrafo(`Termos ausentes: ${a.missingTerms.join(", ")}`);
@@ -91,12 +100,17 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
   }
 
   secao("Descrição completa da vaga");
-  for (const linha of dados.descricao.split("\n")) {
+  for (const [indice, linha] of dados.descricao.split("\n").entries()) {
     if (linha.startsWith("# ")) paragrafo(linha.slice(2), 13, "bold");
     else if (linha.startsWith("## ")) {
       y += 2;
       paragrafo(linha.slice(3), 11, "bold");
     } else if (linha.trim() === "") y += 1.5;
+    else if (indice === 0) paragrafo(linha, 13, "bold");
+    else if (SECOES_DESCRICAO.has(linha.trim())) {
+      y += 2;
+      paragrafo(linha, 11, "bold");
+    }
     else paragrafo(linha.replace(/^- /, "• "));
   }
 
