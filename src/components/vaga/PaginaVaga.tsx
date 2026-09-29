@@ -168,7 +168,7 @@ export function PaginaVaga() {
       <ModalGabarito
         aberto={modalAberto}
         modo={modoModal}
-        textoInicial={gabaritoEditando?.texto}
+        textoInicial={gabaritoEditando?.texto ?? ""}
         onOpenChange={setModalAberto}
         onSalvar={salvarGabarito}
       />

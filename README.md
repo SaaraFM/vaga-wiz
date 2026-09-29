@@ -76,6 +76,35 @@ Source: GitHub Actions**. O site fica disponível em
 
 ---
 
+### Avaliação adicional com Gemini (opcional)
+
+A avaliação atual por TF-IDF continua funcionando localmente. Para habilitar a comparação semântica
+com Gemini no site estático, publique o Worker incluído em `worker/` e guarde a chave como secret
+do Worker. Nunca coloque a chave Gemini no repositório nem em variáveis `VITE_*`.
+
+1. Instale o Wrangler, entre na sua conta Cloudflare e publique o Worker:
+
+   ```bash
+   cd worker
+   npx wrangler login
+   npx wrangler secret put GEMINI_API_KEY
+   npx wrangler deploy
+   ```
+
+   Quando solicitado por `secret put`, cole a chave diretamente no terminal. O deploy mostrará uma
+   URL parecida com `https://vaga-wiz-gemini.<sua-conta>.workers.dev`.
+
+2. No GitHub, abra **Settings → Secrets and variables → Actions → Variables** e crie a variável
+   `GEMINI_API_URL` com a URL do Worker. A URL é pública; somente a chave Gemini é secreta.
+
+3. Execute novamente o workflow **Deploy GitHub Pages** em **Actions → Run workflow**, ou faça um
+   novo push para gerar o site com a URL. O botão **Avaliar com Gemini** aparecerá no painel.
+
+O Worker permite chamadas somente do domínio GitHub Pages e dos endereços locais configurados em
+`worker/wrangler.toml`. A cota gratuita e os limites da Gemini API dependem do modelo e da conta;
+acompanhe o uso no AI Studio. O endpoint do Worker é público, portanto restrinja a chave à Gemini API
+e configure limites de requisição/uso no Cloudflare e no AI Studio.
+
 ## Estrutura do projeto
 
 ```

@@ -1,0 +1,9 @@
+name = "vaga-wiz-gemini"
+main = "src/index.ts"
+compatibility_date = "2026-09-29"
+
+[vars]
+ALLOWED_ORIGINS = "https://saarafm.github.io,http://localhost:5173,http://localhost:8080"
+
+[observability]
+enabled = true

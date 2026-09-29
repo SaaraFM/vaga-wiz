@@ -1,5 +1,5 @@
-import { useMemo, useState, type ReactNode } from "react";
-import { BookMarked, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { BookMarked, BrainCircuit, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -74,6 +74,26 @@ export function PainelResultado({
 
   const [gerandoPdf, setGerandoPdf] = useState(false);
   const [mostrarAviso, setMostrarAviso] = useState(true);
+  const [avaliacaoGemini, setAvaliacaoGemini] = useState<GeminiEvaluation | null>(null);
+  const [avaliandoGemini, setAvaliandoGemini] = useState(false);
+  const [erroGemini, setErroGemini] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAvaliacaoGemini(null);
+    setErroGemini(null);
+  }, [descricao, gabaritoEmUso.descricao]);
+
+  async function avaliarComGemini() {
+    setAvaliandoGemini(true);
+    setErroGemini(null);
+    try {
+      setAvaliacaoGemini(await evaluateWithGemini(descricao, gabaritoEmUso.descricao));
+    } catch (error) {
+      setErroGemini(error instanceof Error ? error.message : "Não foi possível avaliar com Gemini.");
+    } finally {
+      setAvaliandoGemini(false);
+    }
+  }
 
   async function copiarDescricao() {
     await navigator.clipboard.writeText(descricao);
@@ -152,21 +172,82 @@ export function PainelResultado({
         </p>
           <div className="mb-5">{seletor}</div>
 
-          {mostrarAviso && detectarInconsistencia(respostas.cargo, respostas.nivel) && (
-            <div className="mb-5 rounded-xl border border-warning/60 bg-warning/10 p-4 text-sm">
-              <p className="font-medium text-foreground">
-                Possível inconsistência: o cargo informado contém “{detectarInconsistencia(respostas.cargo, respostas.nivel)}”, mas o nível selecionado foi “{respostas.nivel}”.
+        <div className="mb-5 rounded-xl border border-border bg-surface/50 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <BrainCircuit className="size-4 text-primary" aria-hidden />
+                Comparar com Gemini
               </p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => setMostrarAviso(false)}>
-                  Manter assim
-                </Button>
-                <Button type="button" variant="ghost" size="sm" onClick={onCorrigirNivel}>
-                  Corrigir/alterar resposta
-                </Button>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Avaliação semântica por IA, além da comparação por palavras (TF-IDF).
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="gap-2"
+              onClick={avaliarComGemini}
+              disabled={avaliandoGemini || !import.meta.env["GEMINI_API_URL"]}
+            >
+              {avaliandoGemini ? (
+                <Loader2 className="size-4 animate-spin" aria-hidden />
+              ) : (
+                <BrainCircuit className="size-4" aria-hidden />
+              )}
+              {avaliandoGemini ? "Avaliando…" : "Avaliar com Gemini"}
+            </Button>
+          </div>
+          {!import.meta.env["GEMINI_API_URL"] && (
+            <p className="mt-3 text-xs text-muted-foreground">
+              Integração pendente: configure a URL do Worker Gemini para habilitar esta avaliação.
+            </p>
+          )}
+          {erroGemini && (
+            <p role="alert" className="mt-3 text-sm text-destructive">{erroGemini}</p>
+          )}
+          {avaliacaoGemini && (
+            <div className="mt-4 rounded-lg border border-border bg-background p-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge className={cn("mb-2", CORES_FEEDBACK[avaliacaoGemini.verdict === "nao_entendeu" ? "nao-entendeu" : avaliacaoGemini.verdict])}>
+                  {avaliacaoGemini.verdict === "entendeu"
+                    ? "Entendeu"
+                    : avaliacaoGemini.verdict === "parcial"
+                      ? "Parcial"
+                      : "Não entendeu"}
+                </Badge>
+                <span className="mb-2 text-sm font-semibold text-foreground">
+                  Nota Gemini: {avaliacaoGemini.score}/100
+                </span>
               </div>
+              <p className="text-sm leading-relaxed text-foreground">{avaliacaoGemini.feedback}</p>
             </div>
           )}
+        </div>
+
+        {mostrarAviso && detectarInconsistencia(respostas.cargo, respostas.nivel) && (
+          <div className="mb-5 rounded-xl border border-warning/60 bg-warning/10 p-4 text-sm">
+            <p className="font-medium text-foreground">
+              Possível inconsistência: o cargo informado contém “
+              {detectarInconsistencia(respostas.cargo, respostas.nivel)}”, mas o nível selecionado
+              foi “{respostas.nivel}”.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setMostrarAviso(false)}
+              >
+                Manter assim
+              </Button>
+              <Button type="button" variant="ghost" size="sm" onClick={onCorrigirNivel}>
+                Corrigir/alterar resposta
+              </Button>
+            </div>
+          </div>
+        )}
 
         {avaliacao ? (
           <div className="mt-6 space-y-5">
