@@ -12,6 +12,21 @@ interface GeminiResult {
 
 const MAX_TEXT_LENGTH = 12_000;
 
+/** Permite localhost em qualquer porta, pois o Vite pode escolher outra porta disponível. */
+function isLocalDevelopmentOrigin(origin: string | null): boolean {
+  if (!origin) return false;
+
+  try {
+    const parsed = new URL(origin);
+    return (
+      parsed.protocol === "http:" &&
+      ["localhost", "127.0.0.1", "[::1]"].includes(parsed.hostname)
+    );
+  } catch {
+    return false;
+  }
+}
+
 /** Cria uma resposta JSON e libera CORS apenas para uma origem autorizada. */
 function json(data: unknown, status: number, origin: string | null, allowed: boolean): Response {
   const headers = new Headers({
@@ -63,7 +78,9 @@ export default {
 
     const allowedOrigins = env.ALLOWED_ORIGINS.split(",").map((item) => item.trim());
 
-    const allowed = Boolean(origin && allowedOrigins.includes(origin));
+    const allowed = Boolean(
+      origin && (allowedOrigins.includes(origin) || isLocalDevelopmentOrigin(origin)),
+    );
 
     // Preflight CORS
     if (request.method === "OPTIONS") {
