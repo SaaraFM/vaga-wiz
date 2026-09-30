@@ -170,23 +170,19 @@ export default {
             ],
 
             generationConfig: {
-              responseFormat: {
-                text: {
-                  mimeType: "application/json",
-                  schema: {
-                    type: "object",
-                    properties: {
-                      score: { type: "integer" },
-                      verdict: {
-                        type: "string",
-                        enum: ["entendeu", "parcial", "nao_entendeu"],
-                      },
-                      feedback: { type: "string" },
-                      revisedDescription: { type: "string" },
-                    },
-                    required: ["score", "verdict", "feedback", "revisedDescription"],
+              responseMimeType: "application/json",
+              responseSchema: {
+                type: "object",
+                properties: {
+                  score: { type: "integer" },
+                  verdict: {
+                    type: "string",
+                    enum: ["entendeu", "parcial", "nao_entendeu"],
                   },
+                  feedback: { type: "string" },
+                  revisedDescription: { type: "string" },
                 },
+                required: ["score", "verdict", "feedback", "revisedDescription"],
               },
               maxOutputTokens: 2_400,
             },

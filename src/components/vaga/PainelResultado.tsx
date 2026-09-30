@@ -83,11 +83,13 @@ export function PainelResultado({
   const [gerandoPdf, setGerandoPdf] = useState(false);
   const [mostrarAviso, setMostrarAviso] = useState(true);
   const [avaliacaoGemini, setAvaliacaoGemini] = useState<GeminiEvaluation | null>(null);
+  const [descricaoAntesGemini, setDescricaoAntesGemini] = useState<string | null>(null);
   const [avaliandoGemini, setAvaliandoGemini] = useState(false);
   const [erroGemini, setErroGemini] = useState<string | null>(null);
 
   useEffect(() => {
     setAvaliacaoGemini(null);
+    setDescricaoAntesGemini(null);
     setErroGemini(null);
   }, [gabaritoEmUso.descricao]);
 
@@ -96,7 +98,9 @@ export function PainelResultado({
     setAvaliandoGemini(true);
     setErroGemini(null);
     try {
+      const descricaoOriginal = descricao;
       const resultado = await evaluateWithGemini(descricao, gabaritoEmUso.descricao);
+      setDescricaoAntesGemini(descricaoOriginal);
       setAvaliacaoGemini(resultado);
       onDescricaoCorrigida(resultado.revisedDescription);
     } catch (error) {
@@ -235,8 +239,23 @@ export function PainelResultado({
               </div>
               <p className="text-sm leading-relaxed text-foreground">{avaliacaoGemini.feedback}</p>
               <div className="mt-4 border-t border-border pt-4">
-                <p className="text-xs text-muted-foreground">
-                  A descrição acima foi atualizada automaticamente. A nota e o feedback avaliam o texto anterior.
+                <p className="mb-3 text-sm font-semibold text-foreground">O que o Gemini corrigiu</p>
+                <div className="grid gap-3 lg:grid-cols-2">
+                  <div className="min-w-0 rounded-md border border-border bg-surface/50 p-3">
+                    <p className="mb-2 text-xs font-semibold text-muted-foreground">ANTES</p>
+                    <p className="max-h-72 overflow-y-auto whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-foreground">
+                      {descricaoAntesGemini}
+                    </p>
+                  </div>
+                  <div className="min-w-0 rounded-md border border-primary/40 bg-primary/5 p-3">
+                    <p className="mb-2 text-xs font-semibold text-primary">DEPOIS · DESCRIÇÃO CORRIGIDA</p>
+                    <p className="max-h-72 overflow-y-auto whitespace-pre-wrap wrap-break-word text-sm leading-relaxed text-foreground">
+                      {avaliacaoGemini.revisedDescription}
+                    </p>
+                  </div>
+                </div>
+                <p className="mt-3 text-xs text-muted-foreground">
+                  A descrição principal foi atualizada. A nota e o feedback acima avaliam o texto original.
                 </p>
               </div>
             </div>
