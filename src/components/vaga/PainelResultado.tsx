@@ -132,6 +132,8 @@ export function PainelResultado({
         descricao,
         avaliacao,
         nomeGabarito: gabaritoEmUso.nome,
+        avaliacaoGemini,
+        descricaoAntesGemini,
       });
       toast.success("Relatório em PDF gerado.");
     } catch {
