@@ -10,6 +10,7 @@ import { defineConfig } from "vite";
  */
 export default defineConfig({
   base: process.env["PAGES_BASE"] ?? "/descricao_vagas/",
+  envPrefix: ["VITE_", "GEMINI_API_URL"],
   root: fileURLToPath(new URL("./pages", import.meta.url)),
   plugins: [react(), tailwindcss()],
   resolve: {
