@@ -1,4 +1,8 @@
-"""TF-IDF + similaridade do cosseno com scikit-learn."""
+"""Compara uma descrição de vaga com o texto de referência (o gabarito).
+
+O programa dá mais importância às palavras que ajudam a distinguir cada texto,
+calcula quanto os dois textos se parecem e monta uma nota com explicações.
+"""
 
 from __future__ import annotations
 
@@ -12,7 +16,7 @@ from preprocessamento import preprocessar
 
 @dataclass
 class ResultadoAvaliacao:
-    """Agrupa nota, feedback e termos usados para explicar a avaliação."""
+    """Guarda o resultado que será mostrado ao final da comparação."""
     similaridade: float
     nota: int
     classificacao: str
@@ -23,7 +27,7 @@ class ResultadoAvaliacao:
 
 
 def classificar(nota: int) -> str:
-    """Transforma a nota numérica em uma faixa de qualidade legível."""
+    """Converte a nota em um rótulo fácil de entender, como "Boa descrição"."""
     if nota <= 40:
         return "Baixa qualidade"
     if nota <= 70:
@@ -34,7 +38,7 @@ def classificar(nota: int) -> str:
 
 
 def gerar_feedback(nota: int) -> tuple[str, str]:
-    """Escolhe o rótulo e a mensagem de feedback correspondentes à nota."""
+    """Escolhe uma mensagem para explicar o que a nota quer dizer."""
     if nota > 80:
         return ("Entendeu", "A descrição possui grande similaridade com o modelo esperado.")
     if nota >= 50:
@@ -46,13 +50,15 @@ def gerar_feedback(nota: int) -> tuple[str, str]:
 
 
 def avaliar(descricao_gerada: str, descricao_ideal: str) -> ResultadoAvaliacao:
-    """Executa limpeza, TF-IDF e cosseno, e reúne nota, feedback e termos ausentes."""
+    """Compara os textos limpos e reúne nota, explicação e palavras importantes ausentes."""
     texto_gerado = preprocessar(descricao_gerada)
     texto_ideal = preprocessar(descricao_ideal)
 
+    # Dá mais peso às palavras úteis para diferenciar os textos e menos às comuns.
     vetorizador = TfidfVectorizer()
     matriz = vetorizador.fit_transform([texto_gerado, texto_ideal])
 
+    # O resultado fica entre 0 (poucas palavras em comum) e 1 (textos muito parecidos).
     similaridade = float(cosine_similarity(matriz[0], matriz[1])[0][0])
     nota = round(similaridade * 100)
     rotulo, mensagem = gerar_feedback(nota)
@@ -66,6 +72,7 @@ def avaliar(descricao_gerada: str, descricao_ideal: str) -> ResultadoAvaliacao:
     )[:10]
 
     tokens_gerados = set(texto_gerado.split())
+    # Lista palavras importantes do gabarito que não aparecem na descrição criada.
     termos_faltantes = [t for t, _ in termos_gabarito if t not in tokens_gerados][:8]
 
     return ResultadoAvaliacao(

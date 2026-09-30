@@ -1,4 +1,8 @@
-"""Chatbot de linha de comando: coleta respostas, gera a vaga e avalia com PLN.
+"""Conduz a criação de uma descrição de vaga pelo terminal.
+
+Faz perguntas sobre a vaga, reúne as respostas, cria uma descrição e compara o
+resultado com um gabarito sugerido. Ao final, mostra nota, feedback e termos
+importantes que ficaram de fora.
 
 Execução:
     cd python && pip install -r requirements.txt && python chatbot.py

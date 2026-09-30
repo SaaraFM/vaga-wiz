@@ -1,4 +1,8 @@
-"""Pré-processamento de texto em português (versão Python do pipeline de PLN)."""
+"""Prepara textos em português antes de compará-los.
+
+Padroniza maiúsculas, acentos e pontuação, separa o texto em palavras e pode
+remover palavras muito comuns, como "de" e "para", que pouco ajudam na comparação.
+"""
 
 from __future__ import annotations
 
@@ -28,7 +32,7 @@ def remover_acentos(texto: str) -> str:
 
 
 def tokenizar(texto: str, remover_stopwords: bool = True, tamanho_minimo: int = 2) -> list[str]:
-    """Limpa o texto e devolve palavras, opcionalmente removendo stopwords."""
+    """Limpa o texto e separa as palavras, podendo ignorar termos comuns."""
     limpo = remover_acentos(texto.lower())
     limpo = re.sub(r"[^a-z0-9\s]", " ", limpo)
     limpo = re.sub(r"\s+", " ", limpo).strip()
@@ -36,6 +40,7 @@ def tokenizar(texto: str, remover_stopwords: bool = True, tamanho_minimo: int = 
     if not limpo:
         return []
 
+    # Descarta palavras curtas demais; por padrão também ignora palavras muito comuns.
     tokens = [t for t in limpo.split(" ") if len(t) >= tamanho_minimo]
     if remover_stopwords:
         tokens = [t for t in tokens if t not in STOPWORDS_PT]
@@ -43,7 +48,7 @@ def tokenizar(texto: str, remover_stopwords: bool = True, tamanho_minimo: int = 
 
 
 def preprocessar(texto: str, remover_stopwords: bool = True) -> str:
-    """Aplica a limpeza textual e reúne os tokens em uma única string."""
+    """Devolve uma versão limpa do texto, pronta para ser comparada."""
     return " ".join(tokenizar(texto, remover_stopwords=remover_stopwords))
 
 

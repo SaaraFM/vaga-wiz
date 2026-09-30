@@ -1,3 +1,8 @@
+/**
+ * Mostra a descrição de vaga pronta e explica como ela se compara ao gabarito.
+ * Também permite escolher o gabarito, pedir ajustes ao Gemini, copiar o texto e
+ * baixar um relatório em PDF. A avaliação principal é calculada localmente.
+ */
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BookMarked, BrainCircuit, ClipboardCopy, FileDown, Gauge, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -62,7 +67,7 @@ export function PainelResultado({
   onCorrigirNivel,
   onDescricaoCorrigida,
 }: PainelResultadoProps) {
-  // Exibe a avaliação local por TF-IDF; o Gemini é uma opção adicional de correção.
+  // Sugere um gabarito pelo cargo e pela área, a menos que a pessoa escolha outro.
   const gabaritoSugerido = useMemo(
     () => sugerirGabarito(respostas.cargo, respostas.area),
     [respostas.cargo, respostas.area],
@@ -75,6 +80,7 @@ export function PainelResultado({
         ? "definido por você"
         : "escolhido no banco";
 
+  // Compara a descrição atual com o gabarito escolhido e recalcula se algum texto mudar.
   const avaliacao = useMemo(() => {
     if (gabaritoEmUso.descricao.trim().length < 20) return null;
     return evaluateDescription(descricao, gabaritoEmUso.descricao);
@@ -87,6 +93,7 @@ export function PainelResultado({
   const [avaliandoGemini, setAvaliandoGemini] = useState(false);
   const [erroGemini, setErroGemini] = useState<string | null>(null);
 
+  // Uma avaliação do Gemini deixa de valer quando o gabarito muda.
   useEffect(() => {
     setAvaliacaoGemini(null);
     setDescricaoAntesGemini(null);

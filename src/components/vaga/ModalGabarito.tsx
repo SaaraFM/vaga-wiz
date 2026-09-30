@@ -1,3 +1,8 @@
+/**
+ * Abre a janela para criar ou editar um gabarito, que é o texto de referência
+ * usado na avaliação. Guarda o texto enquanto a pessoa edita e só permite
+ * salvar quando ele tem pelo menos 20 caracteres.
+ */
 import { useEffect, useState } from "react";
 
 import {
@@ -29,6 +34,7 @@ export function ModalGabarito({
   const titulo = modo === "create" ? "Criar novo gabarito" : "Editar gabarito";
   const [textoAtual, setTextoAtual] = useState(textoInicial);
 
+  // Ao abrir o formulário, começa com o texto inicial recebido do arquivo que o chamou.
   useEffect(() => {
     if (aberto) setTextoAtual(textoInicial);
   }, [aberto, textoInicial]);
@@ -51,6 +57,7 @@ export function ModalGabarito({
             type="button"
             disabled={textoAtual.trim().length < 20}
             onClick={() => {
+              // Envia o texto para quem abriu a janela e fecha o formulário.
               onSalvar(textoAtual);
               onOpenChange(false);
             }}
