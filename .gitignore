@@ -42,3 +42,7 @@ service-account*.json
 *.sw?
 
 dist-pages
+
+# Python bytecode/cache
+__pycache__/
+*.py[cod]

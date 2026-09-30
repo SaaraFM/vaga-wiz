@@ -24,7 +24,9 @@ export interface EvaluationResult {
   readonly missingTerms: string[];
 }
 
+/** Compara a descrição com o gabarito e reúne nota, classificação e explicações. */
 export function evaluateDescription(generated: string, expected: string): EvaluationResult {
+  // Pipeline da avaliação: limpeza -> TF-IDF -> cosseno -> nota e feedback.
   const cleanedGenerated = preprocess(generated);
   const cleanedExpected = preprocess(expected);
 
@@ -35,6 +37,7 @@ export function evaluateDescription(generated: string, expected: string): Evalua
   const generatedVector = vectors[0] ?? [];
   const expectedVector = vectors[1] ?? [];
 
+  // Compara os vetores preparados acima e usa o resultado para calcular a nota.
   const similarity = cosineSimilarity(generatedVector, expectedVector);
   const score = similarityToScore(similarity);
 

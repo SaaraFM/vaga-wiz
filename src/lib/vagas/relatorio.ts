@@ -110,8 +110,7 @@ export async function gerarRelatorioPdf(dados: DadosRelatorio): Promise<void> {
     else if (SECOES_DESCRICAO.has(linha.trim())) {
       y += 2;
       paragrafo(linha, 11, "bold");
-    }
-    else paragrafo(linha.replace(/^- /, "• "));
+    } else paragrafo(linha.replace(/^- /, "• "));
   }
 
   doc.save(nomeArquivo(dados.respostas.cargo));

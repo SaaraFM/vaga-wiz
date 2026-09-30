@@ -18,6 +18,7 @@ export interface Pergunta {
   readonly sugestoes: readonly string[];
 }
 
+// Roteiro da entrevista: cada pergunta indica em qual campo a resposta será armazenada.
 export const PERGUNTAS: readonly Pergunta[] = [
   {
     campo: "cargo",

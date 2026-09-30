@@ -30,7 +30,10 @@ export function encontrarGabarito(
   gabaritoAutomatico: Gabarito,
 ): { readonly nome: string; readonly descricao: string } {
   if (selecao.source === "automatic") {
-    return { nome: `Automático: ${gabaritoAutomatico.cargo}`, descricao: gabaritoAutomatico.descricao };
+    return {
+      nome: `Automático: ${gabaritoAutomatico.cargo}`,
+      descricao: gabaritoAutomatico.descricao,
+    };
   }
 
   if (selecao.source === "custom") {

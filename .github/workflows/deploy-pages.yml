@@ -20,15 +20,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 22
+          cache: npm
 
       - name: Instalar dependências
-        run: bun install
+        run: npm ci
 
       - name: Build estático
-        run: bun run build:pages
+        run: npm run build:pages
         env:
           PAGES_BASE: /${{ github.event.repository.name }}/
           GEMINI_API_URL: ${{ vars.GEMINI_API_URL }}

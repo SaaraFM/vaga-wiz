@@ -96,12 +96,13 @@ GABARITOS: tuple[Gabarito, ...] = (
 
 
 def _sem_acento(texto: str) -> str:
+    """Normaliza o texto para comparar palavras sem diferença de acentuação."""
     normalizado = unicodedata.normalize("NFD", texto.lower())
     return "".join(c for c in normalizado if unicodedata.category(c) != "Mn")
 
 
 def sugerir_gabarito(cargo: str, area: str = "") -> Gabarito:
-    """Escolhe o gabarito mais próximo do cargo/área informados."""
+    """Retorna o gabarito com mais palavras-chave presentes no cargo e na área."""
     alvo = _sem_acento(f"{cargo} {area}")
     return max(
         GABARITOS,

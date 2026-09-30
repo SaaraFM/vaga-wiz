@@ -23,7 +23,9 @@ interface EstadoVaga {
   readonly descricao: string;
 }
 
+/** Controla a criação da vaga e conecta entrevista, gabaritos e painel de resultado. */
 export function PaginaVaga() {
+  // Coordena os componentes e mantém o estado da vaga durante o fluxo da aplicação.
   const [vaga, setVaga] = useState<EstadoVaga | null>(null);
   const [chatKey, setChatKey] = useState(0);
   const [selecao, setSelecao] = useState<SelectedTemplate>(TEMPLATE_AUTOMATICO);
@@ -33,16 +35,15 @@ export function PaginaVaga() {
       const salvo = window.localStorage.getItem(CHAVE_GABARITOS_CUSTOMIZADOS);
       const parsed = salvo ? (JSON.parse(salvo) as unknown) : [];
       return Array.isArray(parsed)
-        ? parsed.filter(
-            (item): item is CustomTemplate =>
-              Boolean(
-                item &&
-                  typeof item === "object" &&
-                  "id" in item &&
-                  "texto" in item &&
-                  typeof item.id === "string" &&
-                  typeof item.texto === "string",
-              ),
+        ? parsed.filter((item): item is CustomTemplate =>
+            Boolean(
+              item &&
+              typeof item === "object" &&
+              "id" in item &&
+              "texto" in item &&
+              typeof item.id === "string" &&
+              typeof item.texto === "string",
+            ),
           )
         : [];
     } catch {
@@ -53,24 +54,34 @@ export function PaginaVaga() {
   const [modoModal, setModoModal] = useState<"create" | "edit">("create");
   const [gabaritoEditando, setGabaritoEditando] = useState<CustomTemplate | null>(null);
 
+  // Salva os gabaritos personalizados no navegador para que continuem disponíveis depois.
   useEffect(() => {
-    window.localStorage.setItem(CHAVE_GABARITOS_CUSTOMIZADOS, JSON.stringify(gabaritosCustomizados));
+    window.localStorage.setItem(
+      CHAVE_GABARITOS_CUSTOMIZADOS,
+      JSON.stringify(gabaritosCustomizados),
+    );
   }, [gabaritosCustomizados]);
 
-  const gabaritoAutomatico = sugerirGabarito(vaga?.respostas.cargo ?? "", vaga?.respostas.area ?? "");
+  const gabaritoAutomatico = sugerirGabarito(
+    vaga?.respostas.cargo ?? "",
+    vaga?.respostas.area ?? "",
+  );
 
+  /** Abre o formulário para cadastrar um novo gabarito personalizado. */
   function abrirCriacao() {
     setModoModal("create");
     setGabaritoEditando(null);
     setModalAberto(true);
   }
 
+  /** Prepara o modal com o gabarito selecionado para edição. */
   function abrirEdicao(gabarito: CustomTemplate) {
     setModoModal("edit");
     setGabaritoEditando(gabarito);
     setModalAberto(true);
   }
 
+  /** Cria ou atualiza um gabarito e o define como a referência em uso. */
   function salvarGabarito(texto: string) {
     if (modoModal === "edit" && gabaritoEditando) {
       setGabaritosCustomizados((atuais) =>
@@ -87,6 +98,7 @@ export function PaginaVaga() {
     toast.success("Gabarito salvo.");
   }
 
+  /** Confirma a exclusão e volta à sugestão automática se necessário. */
   function excluirGabarito(gabarito: CustomTemplate) {
     if (!window.confirm("Excluir este gabarito personalizado?")) return;
     setGabaritosCustomizados((atuais) => atuais.filter((item) => item.id !== gabarito.id));
@@ -117,9 +129,11 @@ export function PaginaVaga() {
       >
         <div className="flex min-w-0 flex-col gap-4 lg:h-full lg:min-h-0 lg:grid lg:grid-rows-[minmax(0,1fr)_auto] lg:overflow-hidden">
           <div className="h-[min(42rem,calc(100dvh-1.5rem))] min-h-0 shrink-0 lg:h-auto">
-            <ChatVaga
-              key={chatKey}
-              onConcluir={(respostas) => setVaga({ respostas, descricao: gerarDescricao(respostas) })}
+          <ChatVaga
+            key={chatKey}
+              onConcluir={(respostas) =>
+                setVaga({ respostas, descricao: gerarDescricao(respostas) })
+              }
               onReiniciar={() => setVaga(null)}
             />
           </div>
@@ -149,6 +163,10 @@ export function PaginaVaga() {
                 setVaga(null);
                 setChatKey((atual) => atual + 1);
                 toast.message("Você pode responder novamente à entrevista.");
+              }}
+              onDescricaoCorrigida={(descricao) => {
+                setVaga((atual) => (atual ? { ...atual, descricao } : atual));
+                toast.success("O Gemini atualizou automaticamente a descrição da vaga.");
               }}
             />
           ) : (

@@ -107,7 +107,10 @@ Modelo de trabalho: remoto.`,
   },
 ] as const;
 
-/** Escolhe o gabarito mais próximo do cargo/área informados pelo usuário. */
+/**
+ * Sugere um modelo contando palavras-chave do cargo e da área.
+ * É uma busca lexical simples: não interpreta o significado como um modelo de linguagem.
+ */
 export function sugerirGabarito(cargo: string, area = ""): Gabarito {
   const alvo = `${cargo} ${area}`
     .toLowerCase()

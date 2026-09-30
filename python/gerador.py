@@ -17,12 +17,13 @@ CAMPOS = (
 
 
 def _itens(texto: str) -> list[str]:
+    """Separa uma resposta com vários itens para apresentá-los como tópicos."""
     partes = re.split(r"[;,\n]", texto)
     return [p.strip().lstrip("-• ").capitalize() for p in partes if p.strip()]
 
 
 def gerar_descricao(respostas: dict[str, str]) -> str:
-    """Monta a descrição profissional organizada por seções."""
+    """Organiza as respostas do chatbot em uma descrição profissional por seções."""
     cargo = respostas.get("cargo", "")
     area = respostas.get("area", "")
     nivel = respostas.get("nivel", "")

@@ -39,8 +39,8 @@ Atender aos requisitos da disciplina:
 ### Aplicação web (chatbot + avaliação)
 
 ```bash
-bun install      # ou npm install
-bun run dev      # http://localhost:8080
+npm install
+npm run dev      # http://localhost:8080
 ```
 
 ### Testes do pipeline (TypeScript)
@@ -63,7 +63,7 @@ python testes.py      # testes obrigatórios
 O projeto possui um build **estático (SPA)** próprio para o GitHub Pages:
 
 ```bash
-bun run build:pages   # gera a pasta dist-pages/
+npm run build:pages   # gera a pasta dist-pages/
 ```
 
 A publicação é automática: a cada push na branch `main`, o workflow
@@ -71,14 +71,14 @@ A publicação é automática: a cada push na branch `main`, o workflow
 
 Para ativar (uma única vez): no repositório, acesse **Settings → Pages → Build and deployment →
 Source: GitHub Actions**. O site fica disponível em
-`https://saarafm.github.io/descricao_vagas/`.
+`https://saarafm.github.io/vaga-wiz/`.
 
 
 ---
 
-### Avaliação adicional com Gemini (opcional)
+### Correção adicional com Gemini (opcional)
 
-A avaliação atual por TF-IDF continua funcionando localmente. Para habilitar a comparação semântica
+A avaliação atual por TF-IDF continua funcionando localmente. Para habilitar a correção da descrição
 com Gemini no site estático, publique o Worker incluído em `worker/` e guarde a chave como secret
 do Worker. Nunca coloque a chave Gemini no repositório nem em variáveis `VITE_*`.
 
@@ -98,7 +98,7 @@ do Worker. Nunca coloque a chave Gemini no repositório nem em variáveis `VITE_
    `GEMINI_API_URL` com a URL do Worker. A URL é pública; somente a chave Gemini é secreta.
 
 3. Execute novamente o workflow **Deploy GitHub Pages** em **Actions → Run workflow**, ou faça um
-   novo push para gerar o site com a URL. O botão **Avaliar com Gemini** aparecerá no painel.
+   novo push para gerar o site com a URL. O botão **Corrigir automaticamente** aparecerá no painel.
 
 O Worker permite chamadas somente do domínio GitHub Pages e dos endereços locais configurados em
 `worker/wrangler.toml`. A cota gratuita e os limites da Gemini API dependem do modelo e da conta;

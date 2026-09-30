@@ -21,11 +21,12 @@ export interface TermWeight {
   readonly weight: number;
 }
 
-/** Ajusta e transforma os documentos em vetores TF-IDF. */
+/** Calcula TF-IDF e devolve vetores alinhados pelo mesmo vocabulário. */
 export function tfidfVectorize(
   documents: readonly string[],
   options: PreprocessOptions = {},
 ): TfidfResult {
+  // TF conta ocorrências; IDF aumenta o peso de termos menos comuns no conjunto comparado.
   const tokenizedDocs = documents.map((doc) => tokenize(doc, options));
 
   const vocabulary = Array.from(new Set(tokenizedDocs.flat())).sort((a, b) => a.localeCompare(b));
@@ -41,6 +42,7 @@ export function tfidfVectorize(
     }
   }
 
+  // A suavização evita divisão por zero e mantém um peso positivo para cada termo.
   const idf = documentFrequency.map((df) => Math.log((1 + n) / (1 + df)) + 1);
 
   const vectors = tokenizedDocs.map((tokens) => {
@@ -56,14 +58,14 @@ export function tfidfVectorize(
   return { vocabulary, vectors, idf };
 }
 
-/** Normalização L2 de um vetor. */
+/** Normaliza o comprimento do vetor sem alterar a proporção entre os pesos. */
 export function l2Normalize(vector: readonly number[]): number[] {
   const norm = Math.sqrt(vector.reduce((acc, value) => acc + value * value, 0));
   if (norm === 0) return [...vector];
   return vector.map((value) => value / norm);
 }
 
-/** Termos mais relevantes de um vetor TF-IDF. */
+/** Lista os termos de maior peso para explicar o que influenciou a comparação. */
 export function topTerms(
   vocabulary: readonly string[],
   vector: readonly number[],

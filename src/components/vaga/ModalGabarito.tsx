@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CriadorGabarito } from "./CriadorGabarito";
 
@@ -31,7 +38,9 @@ export function ModalGabarito({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle>{titulo}</DialogTitle>
-          <DialogDescription>Preencha os campos usados como referência na avaliação.</DialogDescription>
+          <DialogDescription>
+            Preencha os campos usados como referência na avaliação.
+          </DialogDescription>
         </DialogHeader>
         <CriadorGabarito textoInicial={textoInicial} onChange={setTextoAtual} />
         <DialogFooter className="gap-2">

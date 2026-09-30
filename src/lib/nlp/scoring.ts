@@ -14,19 +14,23 @@ export interface Feedback {
   readonly message: string;
 }
 
-/** nota = similaridade * 100 */
+/** Converte a similaridade de 0–1 em uma nota inteira de 0–100. */
 export function similarityToScore(similarity: number): number {
   return Math.round(similarity * 100);
 }
 
+/** Classifica a nota em uma das faixas de aderência definidas pelo projeto. */
 export function classifyScore(score: number): Classification {
+  // Converte a porcentagem em faixas de qualidade mais fáceis de apresentar.
   if (score <= 40) return { level: "baixa", label: "Baixa aderência" };
   if (score <= 70) return { level: "intermediaria", label: "Aderência intermediária" };
   if (score <= 90) return { level: "boa", label: "Boa aderência" };
   return { level: "excelente", label: "Excelente aderência" };
 }
 
+/** Cria um rótulo e uma mensagem de feedback coerentes com a faixa da nota. */
 export function buildFeedback(score: number): Feedback {
+  // O texto descreve aderência ao gabarito; não prova que o sistema compreendeu a semântica.
   if (score > 80) {
     return {
       level: "entendeu",
@@ -38,7 +42,8 @@ export function buildFeedback(score: number): Feedback {
     return {
       level: "parcial",
       label: "Aderência parcial",
-      message: "A descrição possui alguns elementos do gabarito, mas pode ser aproximada da referência.",
+      message:
+        "A descrição possui alguns elementos do gabarito, mas pode ser aproximada da referência.",
     };
   }
   return {

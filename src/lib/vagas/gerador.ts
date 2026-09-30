@@ -2,6 +2,7 @@
 
 import type { RespostasVaga } from "./perguntas";
 
+/** Divide uma resposta com vários itens em uma lista para formatar na descrição. */
 function listar(texto: string): string[] {
   return texto
     .split(/[;\n]|,(?![^()]*\))/g)
@@ -9,12 +10,15 @@ function listar(texto: string): string[] {
     .filter((item) => item.length > 0);
 }
 
+/** Padroniza a apresentação colocando a primeira letra em maiúscula. */
 function capitalizar(texto: string): string {
   if (texto.length === 0) return texto;
   return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
 
+/** Combina as respostas em uma descrição de vaga com seções organizadas. */
 export function gerarDescricao(respostas: RespostasVaga): string {
+  // Monta o texto a partir das respostas coletadas; nesta etapa não há geração por IA.
   const {
     cargo,
     area,

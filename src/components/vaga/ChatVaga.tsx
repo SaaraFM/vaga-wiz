@@ -25,7 +25,9 @@ const MENSAGEM_INICIAL: Mensagem = {
     "Olá! Sou o assistente de vagas. Vou fazer 8 perguntas e montar uma descrição profissional para a sua empresa.",
 };
 
+/** Renderiza a entrevista guiada e entrega as respostas completas à página principal. */
 export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
+  // Guarda o andamento da entrevista e o valor associado à pergunta atual.
   const [mensagens, setMensagens] = useState<Mensagem[]>([
     MENSAGEM_INICIAL,
     { id: "p-0", autor: "bot", texto: PERGUNTAS[0]!.texto },
@@ -40,6 +42,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
   const areaMensagensRef = useRef<HTMLDivElement>(null);
   const campoRef = useRef<HTMLTextAreaElement>(null);
 
+  // Mantém visível a mensagem mais recente quando a conversa cresce.
   useEffect(() => {
     const areaMensagens = areaMensagensRef.current;
     if (areaMensagens) {
@@ -47,10 +50,12 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
     }
   }, [mensagens]);
 
+  // Devolve o foco ao campo de resposta quando a pergunta muda.
   useEffect(() => {
     if (!finalizado) campoRef.current?.focus();
   }, [indice, finalizado]);
 
+  /** Valida e registra a resposta, avança o roteiro e conclui a entrevista no fim. */
   function responder(valor: string) {
     const texto = valor.trim();
     if (!perguntaAtual) return;
@@ -61,6 +66,7 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
     }
 
     setErro(null);
+    // Liga a resposta ao campo correto e, ao terminar o roteiro, avisa a página principal.
     const proximasRespostas: RespostasVaga = { ...respostas, [perguntaAtual.campo]: texto };
     const proximoIndice = indice + 1;
     const proximaPergunta = PERGUNTAS[proximoIndice];
@@ -83,11 +89,13 @@ export function ChatVaga({ onConcluir, onReiniciar }: ChatVagaProps) {
     if (!proximaPergunta) onConcluir(proximasRespostas);
   }
 
+  /** Trata o envio do formulário sem recarregar a página. */
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     responder(rascunho);
   }
 
+  /** Limpa a conversa e pede à página para remover o resultado atual. */
   function reiniciar() {
     setMensagens([MENSAGEM_INICIAL, { id: "p-0", autor: "bot", texto: PERGUNTAS[0]!.texto }]);
     setIndice(0);

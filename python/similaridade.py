@@ -12,6 +12,7 @@ from preprocessamento import preprocessar
 
 @dataclass
 class ResultadoAvaliacao:
+    """Agrupa nota, feedback e termos usados para explicar a avaliação."""
     similaridade: float
     nota: int
     classificacao: str
@@ -22,7 +23,7 @@ class ResultadoAvaliacao:
 
 
 def classificar(nota: int) -> str:
-    """0-40 baixa | 41-70 intermediária | 71-90 boa | 91-100 excelente."""
+    """Transforma a nota numérica em uma faixa de qualidade legível."""
     if nota <= 40:
         return "Baixa qualidade"
     if nota <= 70:
@@ -33,6 +34,7 @@ def classificar(nota: int) -> str:
 
 
 def gerar_feedback(nota: int) -> tuple[str, str]:
+    """Escolhe o rótulo e a mensagem de feedback correspondentes à nota."""
     if nota > 80:
         return ("Entendeu", "A descrição possui grande similaridade com o modelo esperado.")
     if nota >= 50:
@@ -44,7 +46,7 @@ def gerar_feedback(nota: int) -> tuple[str, str]:
 
 
 def avaliar(descricao_gerada: str, descricao_ideal: str) -> ResultadoAvaliacao:
-    """Pipeline completo: limpeza -> TF-IDF -> cosseno -> nota -> feedback."""
+    """Executa limpeza, TF-IDF e cosseno, e reúne nota, feedback e termos ausentes."""
     texto_gerado = preprocessar(descricao_gerada)
     texto_ideal = preprocessar(descricao_ideal)
 

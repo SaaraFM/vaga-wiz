@@ -67,7 +67,7 @@ export function SeletorGabarito({
             {gabaritosCustomizados.length > 0 && (
               <SelectGroup>
                 <SelectLabel>Meus gabaritos</SelectLabel>
-              {gabaritosCustomizados.map((gabarito) => (
+                {gabaritosCustomizados.map((gabarito) => (
                   <SelectItem key={gabarito.id} value={`custom:${gabarito.id}`}>
                     {tituloDoGabarito(gabarito.texto)}
                   </SelectItem>
@@ -94,10 +94,22 @@ export function SeletorGabarito({
         </Select>
         {gabaritoSelecionado && (
           <div className="flex shrink-0 gap-1">
-            <Button type="button" variant="ghost" size="icon" onClick={() => onEditar(gabaritoSelecionado)} aria-label="Editar gabarito">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onEditar(gabaritoSelecionado)}
+              aria-label="Editar gabarito"
+            >
               <Pencil className="size-4" aria-hidden />
             </Button>
-            <Button type="button" variant="ghost" size="icon" onClick={() => onExcluir(gabaritoSelecionado)} aria-label="Excluir gabarito">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => onExcluir(gabaritoSelecionado)}
+              aria-label="Excluir gabarito"
+            >
               <Trash2 className="size-4" aria-hidden />
             </Button>
           </div>

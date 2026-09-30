@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { evaluateDescription } from "@/lib/nlp";
+import { evaluateWithGemini, type GeminiEvaluation } from "@/lib/nlp/gemini";
 import { sugerirGabarito } from "@/lib/vagas/gabaritos";
 import { encontrarGabarito, type CustomTemplate, type SelectedTemplate } from "@/lib/vagas/modelos";
 import type { RespostasVaga } from "@/lib/vagas/perguntas";
@@ -19,6 +20,7 @@ interface PainelResultadoProps {
   readonly gabaritosCustomizados: readonly CustomTemplate[];
   readonly seletor: ReactNode;
   readonly onCorrigirNivel: () => void;
+  readonly onDescricaoCorrigida: (descricao: string) => void;
 }
 
 const CORES_FEEDBACK: Record<string, string> = {
@@ -27,6 +29,7 @@ const CORES_FEEDBACK: Record<string, string> = {
   "nao-entendeu": "bg-destructive text-destructive-foreground",
 };
 
+/** Remove acentos e padroniza caixa para comparar cargo e nível. */
 function normalizar(texto: string): string {
   return texto
     .normalize("NFD")
@@ -34,6 +37,7 @@ function normalizar(texto: string): string {
     .toLowerCase();
 }
 
+/** Avisa quando o nível citado no cargo diverge do nível informado na entrevista. */
 function detectarInconsistencia(cargo: string, nivel: string): string | null {
   const cargoNormalizado = normalizar(cargo);
   const nivelNormalizado = normalizar(nivel);
@@ -43,10 +47,12 @@ function detectarInconsistencia(cargo: string, nivel: string): string | null {
     { texto: "Sênior", normalizado: "senior" },
   ];
   const nivelNoCargo = niveis.find((item) => cargoNormalizado.includes(item.normalizado));
-  if (!nivelNoCargo || !nivelNormalizado.includes(nivelNoCargo.normalizado)) return nivelNoCargo?.texto ?? null;
+  if (!nivelNoCargo || !nivelNormalizado.includes(nivelNoCargo.normalizado))
+    return nivelNoCargo?.texto ?? null;
   return null;
 }
 
+/** Apresenta a descrição gerada, compara com o gabarito e oferece ações de resultado. */
 export function PainelResultado({
   respostas,
   descricao,
@@ -54,7 +60,9 @@ export function PainelResultado({
   gabaritosCustomizados,
   seletor,
   onCorrigirNivel,
+  onDescricaoCorrigida,
 }: PainelResultadoProps) {
+  // Exibe a avaliação local por TF-IDF; o Gemini é uma opção adicional de correção.
   const gabaritoSugerido = useMemo(
     () => sugerirGabarito(respostas.cargo, respostas.area),
     [respostas.cargo, respostas.area],
@@ -81,13 +89,16 @@ export function PainelResultado({
   useEffect(() => {
     setAvaliacaoGemini(null);
     setErroGemini(null);
-  }, [descricao, gabaritoEmUso.descricao]);
+  }, [gabaritoEmUso.descricao]);
 
+  /** Solicita a correção ao Gemini e atualiza a descrição se a resposta for válida. */
   async function avaliarComGemini() {
     setAvaliandoGemini(true);
     setErroGemini(null);
     try {
-      setAvaliacaoGemini(await evaluateWithGemini(descricao, gabaritoEmUso.descricao));
+      const resultado = await evaluateWithGemini(descricao, gabaritoEmUso.descricao);
+      setAvaliacaoGemini(resultado);
+      onDescricaoCorrigida(resultado.revisedDescription);
     } catch (error) {
       setErroGemini(error instanceof Error ? error.message : "Não foi possível avaliar com Gemini.");
     } finally {
@@ -95,11 +106,13 @@ export function PainelResultado({
     }
   }
 
+  /** Copia a descrição atual para a área de transferência. */
   async function copiarDescricao() {
     await navigator.clipboard.writeText(descricao);
     toast.success("Descrição copiada para a área de transferência.");
   }
 
+  /** Gera e baixa um PDF com a descrição e a avaliação atual. */
   async function baixarRelatorio() {
     setGerandoPdf(true);
     try {
@@ -166,21 +179,20 @@ export function PainelResultado({
         <p className="mb-4 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
           <BookMarked className="size-4 shrink-0 text-primary" aria-hidden />
           <span>
-            <strong className="text-foreground">{gabaritoEmUso.nome}</strong>,{" "}
-            {origemGabarito}
+            <strong className="text-foreground">{gabaritoEmUso.nome}</strong>, {origemGabarito}
           </span>
         </p>
-          <div className="mb-5">{seletor}</div>
+        <div className="mb-5">{seletor}</div>
 
         <div className="mb-5 rounded-xl border border-border bg-surface/50 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <BrainCircuit className="size-4 text-primary" aria-hidden />
-                Comparar com Gemini
+                Corrigir com Gemini
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Avaliação semântica por IA, além da comparação por palavras (TF-IDF).
+                Avalia e atualiza a descrição automaticamente com base no gabarito.
               </p>
             </div>
             <Button
@@ -196,7 +208,7 @@ export function PainelResultado({
               ) : (
                 <BrainCircuit className="size-4" aria-hidden />
               )}
-              {avaliandoGemini ? "Avaliando…" : "Avaliar com Gemini"}
+              {avaliandoGemini ? "Corrigindo vaga…" : "Corrigir automaticamente"}
             </Button>
           </div>
           {!import.meta.env["GEMINI_API_URL"] && (
@@ -218,10 +230,15 @@ export function PainelResultado({
                       : "Não entendeu"}
                 </Badge>
                 <span className="mb-2 text-sm font-semibold text-foreground">
-                  Nota Gemini: {avaliacaoGemini.score}/100
+                  Nota antes da correção: {avaliacaoGemini.score}/100
                 </span>
               </div>
               <p className="text-sm leading-relaxed text-foreground">{avaliacaoGemini.feedback}</p>
+              <div className="mt-4 border-t border-border pt-4">
+                <p className="text-xs text-muted-foreground">
+                  A descrição acima foi atualizada automaticamente. A nota e o feedback avaliam o texto anterior.
+                </p>
+              </div>
             </div>
           )}
         </div>
@@ -306,6 +323,7 @@ export function PainelResultado({
   );
 }
 
+/** Apresenta um indicador textual, como similaridade ou nota. */
 function Metrica({ rotulo, valor }: { readonly rotulo: string; readonly valor: string }) {
   return (
     <div className="flex min-h-32 flex-col justify-center rounded-xl border border-border bg-background px-5 py-4">
@@ -315,6 +333,7 @@ function Metrica({ rotulo, valor }: { readonly rotulo: string; readonly valor: s
   );
 }
 
+/** Desenha a nota percentual em formato de anel de progresso. */
 function RingNota({ valor }: { readonly valor: number }) {
   const nota = Math.min(Math.max(valor, 0), 100);
 
@@ -356,6 +375,7 @@ function RingNota({ valor }: { readonly valor: number }) {
   );
 }
 
+/** Exibe os termos relevantes ou ausentes que ajudam a explicar a comparação. */
 function ListaTermos({
   titulo,
   itens,

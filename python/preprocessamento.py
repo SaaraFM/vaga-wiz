@@ -28,7 +28,7 @@ def remover_acentos(texto: str) -> str:
 
 
 def tokenizar(texto: str, remover_stopwords: bool = True, tamanho_minimo: int = 2) -> list[str]:
-    """Aplica limpeza completa e devolve a lista de tokens."""
+    """Limpa o texto e devolve palavras, opcionalmente removendo stopwords."""
     limpo = remover_acentos(texto.lower())
     limpo = re.sub(r"[^a-z0-9\s]", " ", limpo)
     limpo = re.sub(r"\s+", " ", limpo).strip()
@@ -43,8 +43,7 @@ def tokenizar(texto: str, remover_stopwords: bool = True, tamanho_minimo: int = 
 
 
 def preprocessar(texto: str, remover_stopwords: bool = True) -> str:
-    """Converte para minúsculas, remove pontuação, caracteres especiais,
-    stopwords em português e normaliza os espaços."""
+    """Aplica a limpeza textual e reúne os tokens em uma única string."""
     return " ".join(tokenizar(texto, remover_stopwords=remover_stopwords))
 
 

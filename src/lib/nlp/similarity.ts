@@ -1,10 +1,11 @@
-/** Similaridade do cosseno entre vetores TF-IDF. */
+/** Mede de 0 a 1 o alinhamento dos vetores TF-IDF das duas descrições. */
 
 export function cosineSimilarity(a: readonly number[], b: readonly number[]): number {
   if (a.length !== b.length) {
     throw new Error("Os vetores precisam ter a mesma dimensão.");
   }
 
+  // Mede o alinhamento entre vetores; ainda compara pesos de palavras, não significado.
   let dot = 0;
   let normA = 0;
   let normB = 0;

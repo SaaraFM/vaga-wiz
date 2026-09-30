@@ -23,6 +23,7 @@ PERGUNTAS = {
 
 
 def coletar_respostas() -> dict[str, str]:
+    """Faz as perguntas do roteiro e devolve as respostas organizadas por campo."""
     print("=== Criador de Descrição de Vagas (PLN) ===\n")
     respostas: dict[str, str] = {}
     for chave, _rotulo in CAMPOS:
@@ -32,6 +33,7 @@ def coletar_respostas() -> dict[str, str]:
 
 
 def main() -> None:
+    """Executa entrevista, geração da vaga, escolha do gabarito e avaliação final."""
     respostas = coletar_respostas()
 
     descricao = gerar_descricao(respostas)

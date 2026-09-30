@@ -133,7 +133,7 @@ export const STOPWORDS_PT: ReadonlySet<string> = new Set([
   "on",
 ]);
 
-/** Remove acentuação mantendo os caracteres base. */
+/** Retira acentos para que, por exemplo, “área” e “area” sejam comparáveis. */
 export function removeAccents(text: string): string {
   return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
@@ -145,15 +145,16 @@ export interface PreprocessOptions {
   readonly minTokenLength?: number;
 }
 
-/** Retorna o texto limpo (tokens separados por espaço simples). */
+/** Limpa o texto e devolve as palavras reunidas em uma string. */
 export function preprocess(text: string, options: PreprocessOptions = {}): string {
   return tokenize(text, options).join(" ");
 }
 
-/** Retorna a lista de tokens limpos do texto. */
+/** Divide o texto em palavras padronizadas e aplica os filtros configurados. */
 export function tokenize(text: string, options: PreprocessOptions = {}): string[] {
   const { removeStopwords = true, minTokenLength = 2 } = options;
 
+  // Padroniza caixa, acentos, pontuação e espaços para comparar textos em condições iguais.
   const cleaned = removeAccents(text.toLowerCase())
     .replace(/[^a-z0-9\s]/g, " ")
     .replace(/\s+/g, " ")
@@ -161,6 +162,7 @@ export function tokenize(text: string, options: PreprocessOptions = {}): string[
 
   if (cleaned.length === 0) return [];
 
+  // Stopwords como “de” e “para” são removidas porque pouco distinguem o conteúdo da vaga.
   return cleaned
     .split(" ")
     .filter((token) => token.length >= minTokenLength)
